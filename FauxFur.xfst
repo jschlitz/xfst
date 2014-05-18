@@ -127,14 +127,14 @@ define Pardon {*} -> 0;
 
 define Linearity [ %+Met -> ... {*}] ;
 
-define IdentV [ %+DeltaVoice -> ... {*}] ;
+define IdentVoice [ %+DeltaVoice -> ... {*}] ;
 
 # Markedness constraints
 
-define NoBL [ [ BILABIAL l ]/GENTAGS -> ... {*}] ;
+define NoBL [ [ BILABIAL l ]/[GENTAGS | %+]-> ... {*}] ;
 
 # Can this handle overlapping contexts?
-define NoSonTSon [ SONORANT t SONORANT ]/GENTAGS -> ... {*} ;
+define NoSonTSon [ SONORANT t SONORANT ]/[GENTAGS | %+] -> ... {*} ;
 
 ########################## READABILITY ##############################
 
@@ -207,6 +207,8 @@ down mul+3rd+Pl+Perfect
 read regex Morphology .o. Gen 
 .o. NoBL .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. Linearity .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. NoSonTSon .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
+.o. IdentVoice .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. Pretty
 ;
 
