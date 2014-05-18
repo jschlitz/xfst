@@ -1,0 +1,70 @@
+# Faux Fur
+
+# Morphology
+
+################################## DATA #################################
+
+define ROOTS {lat} | {ba} | {mul} ;
+
+############################# BASIC DEFINITIONS #########################
+
+define V [ a | e | i | o | u ] ;
+define C [ b | j | k | l | m | t ] ;
+define BILABIAL [ b | m | f ] ;
+
+define PERSON [ %+1st | %+2nd | %+3rd] ;
+define NUMBER [ %+Sing | %+Pl ] ;
+define TENSE [ %+Perfect ] ;
+
+define TAGS [ PERSON | NUMBER | TENSE ] ;
+
+############################# MORPHOLOGY ################################
+
+# To do: allow free order in tags
+# !!! When we add TENSE, several of these have to change
+# Do metathesis first
+# All persons and numbers except 3Sing
+# Tags contain 1st, or 2nd, or 3rd and Pl
+define Metathesizes ROOTS [ %+1st NUMBER | %+2nd NUMBER | %+3rd %+Pl ] TENSE;
+
+define Reorder [ l:a a:l ?* | l:e e:l ?* | l:i i:l ?* | l:o o:l ?* |
+l:u u:l ?* | m:a a:m ?*  | m:e e:m ?* | m:i i:m ?* | m:o o:m ?* | m:u u:m ?* |
+b:a a:b ?*  |
+b:e e:b ?* |
+b:i i:b ?* |
+b:o o:b ?* |
+b:u u:b ?* 
+] ;
+
+define NoMetathesis ROOTS %+3rd %+Sing TENSE ;
+
+define Personal1 [ [ Metathesizes .o. Reorder ] | NoMetathesis]  ;
+
+# Do personal prefixes next
+
+read regex Personal1 ;
+
+echo Forms of /lat/
+down lat+1st+Perfect
+down lat+1st+Sing+Perfect
+down lat+1st+Pl+Perfect
+down lat+2nd+Sing+Perfect
+down lat+2nd+Pl+Perfect
+down lat+3rd+Sing+Perfect
+down lat+3rd+Pl+Perfect
+echo Forms of /ba/
+down ba+1st+Perfect
+down ba+1st+Sing+Perfect
+down ba+1st+Pl+Perfect
+down ba+2nd+Sing+Perfect
+down ba+2nd+Pl+Perfect
+down ba+3rd+Sing+Perfect
+down ba+3rd+Pl+Perfect
+echo Forms of /mul/
+down mul+1st+Perfect
+down mul+1st+Sing+Perfect
+down mul+1st+Pl+Perfect
+down mul+2nd+Sing+Perfect
+down mul+2nd+Pl+Perfect
+down mul+3rd+Sing+Perfect
+down mul+3rd+Pl+Perfect
