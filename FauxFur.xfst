@@ -9,19 +9,24 @@ define ROOTS {lat} | {ba} | {mul} ;
 ############################# BASIC DEFINITIONS #########################
 
 define V [ a | e | i | o | u ] ;
-define C [ b | j | k | l | m | t ] ;
+define C [ b | d | j | k | l | m | t ] ;
+
+define SEGMENTS [ V | C ] ;
+
 define BILABIAL [ b | m | f ] ;
+define SONORANT [ V | l ] ;
 
 define PERSON [ %+1st | %+2nd | %+3rd] ;
 define NUMBER [ %+Sing | %+Pl ] ;
 define TENSE [ %+Perfect ] ;
+
+define GENTAGS [ %+DeltaVoice | %+Met ] ;
 
 define TAGS [ PERSON | NUMBER | TENSE ] ;
 
 ############################# MORPHOLOGY ################################
 
 # To do: allow free order in tags
-# !!! When we add TENSE, several of these have to change
 # Do metathesis first
 # All persons and numbers except 3Sing
 # Tags contain 1st, or 2nd, or 3rd and Pl
@@ -40,31 +45,248 @@ define NoMetathesis ROOTS %+3rd %+Sing TENSE ;
 
 define Personal1 [ [ Metathesizes .o. Reorder ] | NoMetathesis]  ;
 
-# Do personal prefixes next
+# 1st and 3rd Sing have no prefixes and pass through
+# Literal + marks morpheme boundary
 
-read regex Personal1 ;
+# Can't use ROOTS here because metathesis has applied
+define PersPrefixes [ 
+    SEGMENTS+ [ [ %+1st | %+3rd ] %+Sing ] TENSE |
+    0:j 0:%+ SEGMENTS+/%+ [ %+2nd %+Sing ] TENSE |
+    0:b 0:%+ SEGMENTS+/%+ [ %+2nd %+Pl ] TENSE |
+    0:k 0:%+ SEGMENTS+/%+ [ [ %+1st | %+3rd ] %+Pl ] TENSE
+];
+
+# Perfect tense
+# 3rd Pl gets a different ending than the rest
+
+define AddTense [
+    SEGMENTS+/%+ 0:%+ 0:i %+3rd:0 %+Sing:0 %+Perfect:0 |
+    SEGMENTS+/%+ 0:%+ 0:i [ %+1st | %+2nd ]:0 NUMBER:0 %+Perfect:0 |
+    SEGMENTS+/%+ 0:%+ 0:i 0:e %+3rd:0 %+Pl:0 %+Perfect:0 
+] ;
+
+define Morphology Personal1 .o. PersPrefixes .o. AddTense ;
+
+################################### GEN ##################################
+
+define VoiceCoronal t (->) d %+DeltaVoice ;
+
+# Applies more than once, BUT ends up with interspersed tags
+define Shuffle [ [ ?* m:l l:m ?* []:%+Met | ~$[m l] ] | ?* ] .o.
+[ [ ?* f:l l:f ?* []:%+Met | ~$[f l] ] | ?* ] .o.
+[ [ ?* b:l l:f ?* []:%+Met | ~$[f l] ] | ?* ] ;
+
+# Cleanup?
+# 0:K \K+ K:0 ?* | \K* ;
+
+# OT Constraints
+
+define Gen [ VoiceCoronal .o. Shuffle ] ;
+
+######################### OT CONSTRAINTS #############################
+
+# We use asterisks to mark constraint violations. Ordinary constraints
+# such as Lapse assign single asterisks as the violation marks and the
+# candidate with the fewest number is selected. Gradient constraints
+# such as AllFeetFirst mark violations with sequences of asterisks.
+# The number increases with distance from the word edge.
+
+# Every instance of * in an output candidate is a violation.
+
+define Viol ${*};
+
+# We prune candidates with "lenient composition" that eliminates
+# candidates that violate the constraint provided that at least
+# one output candidate survives.
+
+define Viol0 ~Viol;        # No violations
+define Viol1 ~[Viol^2];    # At most one violation
+define Viol2 ~[Viol^3];    # At most two violations
+define Viol3 ~[Viol^4];    # etc.
+define Viol4 ~[Viol^5];
+define Viol5 ~[Viol^6];
+define Viol6 ~[Viol^7];
+define Viol7 ~[Viol^8];
+define Viol8 ~[Viol^9];
+define Viol9 ~[Viol^10];
+define Viol10 ~[Viol^11];
+define Viol11 ~[Viol^12];
+define Viol12 ~[Viol^13];
+define Viol13 ~[Viol^14];
+define Viol14 ~[Viol^15];
+define Viol15 ~[Viol^16];
+
+# This eliminates the violation marks after the candidate set has
+# been pruned by a constraint.
+
+define Pardon {*} -> 0;
+
+########################## CONSTRAINTS ##############################
+
+# Faithfulness constraints
+
+define Linearity [ %+Met -> ... {*}] ;
+
+define IdentV [ %+DeltaVoice -> ... {*}] ;
+
+# Markedness constraints
+
+define NoBL [ [ BILABIAL l ]/GENTAGS -> ... {*}] ;
+
+# Can this handle overlapping contexts?
+define NoSonTSon [ SONORANT t SONORANT ]/GENTAGS -> ... {*} ;
+
+########################## READABILITY ##############################
+
+define Pretty [ GENTAGS | %+ ] -> 0 ;
+
+read regex Morphology ;
+
+
 
 echo Forms of /lat/
-down lat+1st+Perfect
+
+echo lat+1st+Sing+Perfect
 down lat+1st+Sing+Perfect
-down lat+1st+Pl+Perfect
+
+echo lat+2nd+Sing+Perfect
 down lat+2nd+Sing+Perfect
-down lat+2nd+Pl+Perfect
+
+echo lat+3rd+Sing+Perfect
 down lat+3rd+Sing+Perfect
+
+echo lat+1st+Pl+Perfect
+down lat+1st+Pl+Perfect
+
+echo lat+2nd+Pl+Perfect
+down lat+2nd+Pl+Perfect
+
+echo lat+3rd+Pl+Perfect
 down lat+3rd+Pl+Perfect
+
 echo Forms of /ba/
-down ba+1st+Perfect
+
+echo ba+1st+Sing+Perfect
 down ba+1st+Sing+Perfect
-down ba+1st+Pl+Perfect
+
+echo ba+2nd+Sing+Perfect
 down ba+2nd+Sing+Perfect
-down ba+2nd+Pl+Perfect
+
+echo ba+3rd+Sing+Perfect
 down ba+3rd+Sing+Perfect
+
+echo ba+1st+Pl+Perfect
+down ba+1st+Pl+Perfect
+
+echo ba+2nd+Pl+Perfect
+down ba+2nd+Pl+Perfect
+
+echo ba+3rd+Pl+Perfect
 down ba+3rd+Pl+Perfect
+
 echo Forms of /mul/
-down mul+1st+Perfect
+
+echo mul+1st+Sing+Perfect
 down mul+1st+Sing+Perfect
-down mul+1st+Pl+Perfect
+
+echo mul+2nd+Sing+Perfect
 down mul+2nd+Sing+Perfect
-down mul+2nd+Pl+Perfect
+
+echo mul+3rd+Sing+Perfect
 down mul+3rd+Sing+Perfect
+
+echo mul+1st+Pl+Perfect
+down mul+1st+Pl+Perfect
+
+echo mul+2nd+Pl+Perfect
+down mul+2nd+Pl+Perfect
+
+echo mul+3rd+Pl+Perfect
+down mul+3rd+Pl+Perfect
+
+read regex Morphology .o. Gen 
+.o. NoBL .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. Linearity .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. Pretty
+;
+
+echo After Gen
+echo Forms of /lat/
+
+echo **
+echo lat+1st+Sing+Perfect
+down lat+1st+Sing+Perfect
+
+echo **
+echo lat+2nd+Sing+Perfect
+down lat+2nd+Sing+Perfect
+
+echo **
+echo lat+3rd+Sing+Perfect
+down lat+3rd+Sing+Perfect
+
+echo **
+echo lat+1st+Pl+Perfect
+down lat+1st+Pl+Perfect
+
+echo **
+echo lat+2nd+Pl+Perfect
+down lat+2nd+Pl+Perfect
+
+echo **
+echo lat+3rd+Pl+Perfect
+down lat+3rd+Pl+Perfect
+
+echo **
+echo Forms of /ba/
+
+echo **
+echo ba+1st+Sing+Perfect
+down ba+1st+Sing+Perfect
+
+echo **
+echo ba+2nd+Sing+Perfect
+down ba+2nd+Sing+Perfect
+
+echo **
+echo ba+3rd+Sing+Perfect
+down ba+3rd+Sing+Perfect
+
+echo **
+echo ba+1st+Pl+Perfect
+down ba+1st+Pl+Perfect
+
+echo **
+echo ba+2nd+Pl+Perfect
+down ba+2nd+Pl+Perfect
+
+echo **
+echo ba+3rd+Pl+Perfect
+down ba+3rd+Pl+Perfect
+
+echo **
+echo Forms of /mul/
+
+echo **
+echo mul+1st+Sing+Perfect
+down mul+1st+Sing+Perfect
+
+echo **
+echo mul+2nd+Sing+Perfect
+down mul+2nd+Sing+Perfect
+
+echo **
+echo mul+3rd+Sing+Perfect
+down mul+3rd+Sing+Perfect
+
+echo **
+echo mul+1st+Pl+Perfect
+down mul+1st+Pl+Perfect
+
+echo **
+echo mul+2nd+Pl+Perfect
+down mul+2nd+Pl+Perfect
+
+echo **
+echo mul+3rd+Pl+Perfect
 down mul+3rd+Pl+Perfect
