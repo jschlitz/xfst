@@ -1,0 +1,144 @@
+# -*- coding: utf-8 -*-
+
+# The system encoded in the script consists of a Gen function
+# that produces a vast number of output candidates for each input
+# word. The candidates are subject to nine ranked optimality
+# constraints: Clash, AlignLeft, MainStress, FootBin, Lapse, NonFinal,
+# StressToWeight, Parse, and AllFeetFirst.
+
+# Lenient composition is used to guarantee that at least one output
+# form survives, no matter how suboptimal it is.
+
+################################## DATA ##################################
+
+define ToastWords {tata} | {tatta} | {ta} | {tattatta} ;
+
+######################### BASIC DEFINITIONS #############################
+
+# Finnish has many vowels
+# Our sample language has one, /a/
+define V [ a ] ;
+
+# Finnish has many consonants
+# Our sample language has one, t
+define C [ t ] ;                                   # Consonant
+
+
+################################### GEN ##################################
+
+# Insight?
+# It doesn't matter where we place the %+Del mark - we just count them
+# So ... hmm, not sure this will work
+# Because it's applying to two different consonants
+# And thus giving us two different but equivalent outputs with the same
+# violation profiles
+# t a +Del t a
+# t a t +Del a
+# On the other hand ...
+# If we map both of those to
+# +Del t a t a
+# Then we're set
+
+# Creates equivalent forms - move %+Del to beginning
+#define Deletion [ C (->) %+Del ];
+# Doesn't actually delete C
+#define Deletion [ ?+ (->) %+Del ... || .#. _ C ];
+# Prefixes +Del regardless of whether or not deletion took place
+#define Deletion [ C (->) 0 ] .o. [? -> %+Del ... || .#. _ ]]
+# This notation allows multiple optional operations to be grouped - 
+# if I can get the syntax right
+# See http://www.stanford.edu/~laurik/fsmbook/errata/optional-replacement.html
+# Gives right results for up to three t's
+#define Deletion [[ []:%+Del ?* t:0 ?* ] | ?* .o.
+#[ []:%+Del \t+ t:0 ?* ] | ?*  .o. 
+#[ []:%+Del \t+ t:0 ?* ] | ?*  
+#] .o. 
+#~[ ?* \[%+Del]  %+Del ?*];
+
+# Can replace ?* t:0 ?* with $[t:0], looks like
+define Deletion [[ []:%+Del ?* t:0 ?* ] | ?* .o.
+[ []:%+Del ?* t:0 ?* ] | ?*  .o. 
+[ []:%+Del ?* t:0 ?* ] | ?*  
+] .o. 
+~[ ?* \[%+Del]  %+Del ?*];
+# In keeping with the idea of "richness of the base", the Gen
+# function produces a great number of output candidates for
+# even short words. Long words have millions of possible outputs.
+
+define Gen [ Deletion ];
+
+######################### OT CONSTRAINTS #############################
+
+# We use asterisks to mark constraint violations. Ordinary constraints
+# such as Lapse assign single asterisks as the violation marks and the
+# candidate with the fewest number is selected. Gradient constraints
+# such as AllFeetFirst mark violations with sequences of asterisks.
+# The number increases with distance from the word edge.
+
+# Every instance of * in an output candidate is a violation.
+
+define Viol ${*};
+
+# We prune candidates with "lenient composition" that eliminates
+# candidates that violate the constraint provided that at least
+# one output candidate survives.
+
+define Viol0 ~Viol;        # No violations
+define Viol1 ~[Viol^2];    # At most one violation
+define Viol2 ~[Viol^3];    # At most two violations
+define Viol3 ~[Viol^4];    # etc.
+define Viol4 ~[Viol^5];
+define Viol5 ~[Viol^6];
+define Viol6 ~[Viol^7];
+define Viol7 ~[Viol^8];
+define Viol8 ~[Viol^9];
+define Viol9 ~[Viol^10];
+define Viol10 ~[Viol^11];
+define Viol11 ~[Viol^12];
+define Viol12 ~[Viol^13];
+define Viol13 ~[Viol^14];
+define Viol14 ~[Viol^15];
+define Viol15 ~[Viol^16];
+
+# This eliminates the violation marks after the candidate set has
+# been pruned by a constraint.
+
+define Pardon {*} -> 0;
+
+########################## CONSTRAINTS ##############################
+
+define MAX [ %+Del -> ... {*}] ;
+
+define NoGem [ t t -> ... {*}] ;
+
+########################## CONSTRAINTS ##############################
+
+define Pretty [ %+Del ] -> 0;
+
+########################## Evaluation ######################################
+
+echo ### Computing the prosody for ToastWords
+
+# Some constraints can always be satisfied; some constraints are
+# violated many times. The limits have been chosen to produce
+# a unique winner in all the 25 test cases in FinnWords.
+
+regex [ToastWords .o. Gen
+.o. NoGem .O. Viol0 .o. Pardon
+.o. MAX .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. Pretty
+      ];
+
+#print lower-words
+
+echo # Down {ta}
+down ta
+echo # Down {tata}
+down tata
+echo # Down {tatta}
+down tatta
+# Why is this acting strange?  Is it because it can never reach that last t?
+echo # Down tattatta
+down tattatta
+
+# Problem: set of candidates, some of which have more violations than othersjjjj
