@@ -7,21 +7,41 @@
 ################################## DATA #################################
 
 # Simplify for syllabification
-#define ROOTS {hIgIp} | {hIdIm} | {hIdIn} | {gihib} ;
-define ROOTS {hIgIp} ;
+define ROOTS {hIgIp} | {hIdIm} | {hIdIn} | {gihib} ;
+#define ROOTS {hIgIp} ;
 
 ############################# BASIC DEFINITIONS #########################
 
-define V [ a | e | i | I | o | u ] ;
-define C [ b | d | g | h | m | n | p | ' ] ;
+define V [ a | %[aPrimaryStress%] | %[aSecondaryStress%] | 
+    e | %[ePrimaryStress%] | %[eSecondaryStress%] |
+    i | %[iPrimaryStress%] | %[iSecondaryStress%] |
+    I | %[IPrimaryStress%] | %[ISecondaryStress%] |
+    o | %[oPrimaryStress%] | %[oSecondaryStress%] |
+    u | %[uPrimaryStress%] | %[uSecondaryStress%] ] ;
+
+
+# q = glottal stop
+define C [ b | d | g | h | k | m | n | p | q | t ] ;
 
 define SEGMENT [ V | C ] ;
 
-define HighV [ u | i ] ;
-define GLOTTAL [ h | ' ] ;
+define HighV [ u | i | I ] ;
+define GLOTTAL [ h | q ] ;
 # sholud call this "non-glottal obstruent"
-define OBSTRUENT [ b | g | m | n | p ] ;
+define OBSTRUENT [ b | d | g | k | p | t] ;
 define SONORANT [ V ] ;
+define STRESSED [ %[aPrimaryStress%] | %[ePrimaryStress%] | %[iPrimaryStress%] |
+%[IPrimaryStress%] | %[oPrimaryStress%] | %[uPrimaryStress%] ] |
+    [ %[aSecondaryStress%] | %[eSecondaryStress%] | %[iSecondaryStress%] | 
+    %[ISecondaryStress%] | %[oSecondaryStress%] | %[uSecondaryStress%] ] ;
+
+define PRIMARYSTRESS [ %[aPrimaryStress%] | %[ePrimaryStress%] | 
+    %[iPrimaryStress%] | %[IPrimaryStress%] | %[oPrimaryStress%] | 
+    %[uPrimaryStress%] ] ;
+
+define SECONDARYSTRESS [ %[aSecondaryStress%] | %[eSecondaryStress%] | 
+    %[iSecondaryStress%] | %[ISecondaryStress%] | %[oSecondaryStress%] | 
+    %[uSecondaryStress%] ] ;
 
 define GENTAGS [ %+DelV | %+Met ] ;
 
@@ -38,6 +58,8 @@ define Light [C* V];
 define Heavy [Light SEGMENT+];
 
 define S [ Heavy | Light ] ;
+define SS [ Heavy | Light .o. $[STRESSED]] ;
+define USS [ Heavy | Light .o. ~$[STRESSED]] ;
 
 ############################# MORPHOLOGY ################################
 
@@ -46,39 +68,51 @@ define S [ Heavy | Light ] ;
 # All persons and numbers except 3Sing
 # Tags contain 1st, or 2nd, or 3rd and Pl
 
-define PREFIXES [ {'i} | {ma} | {pu} ] %+ ;
+define PREFIXES [ {qi} | {ma} | {pu} ] %+ ;
 define SUFFIXES %+ [ {In} ] ;
 
-#define Morphology (PREFIXES) ROOTS | ROOTS (SUFFIXES);
-define Morphology ROOTS ;
+define Morphology (PREFIXES) ROOTS | ROOTS (SUFFIXES);
+#define Morphology ROOTS ;
 
 ################################### GEN ##################################
 
-# Probably need to change this because it gets complex codas?
-# or is that a problem?
-#define Syllabify [ C* V+ C* ]/[GENTAGS | %+] @-> ... "." || _ [C V]/[GENTAGS | %+] ;
+# Stopped working when Shuffle added
+# Is Shuffle introducing something odd?
+# %+Met is in Gentags
 define Syllabify SEGMENT (->) ... "." || _ SEGMENT/[GENTAGS | %+] ;
-
-define VoiceCoronal t (->) d %+DeltaVoice ;
-
-define Denasalize n (->) d %+DeltaNasal .o.
-m (->) b %+DeltaNasal .o.
-%[PalatalN%] (->) t j %+DeltaNasal .o.
-%[Engma%] (->) g %+DeltaNasal 
-;
+#define Syllabify SEGMENT (->) ... "." || _ [GENTAGS | %+]* SEGMENT ;
 
 # Applies more than once, BUT ends up with interspersed tags
-define Shuffle [ [ ?* m:l l:m ?* []:%+Met | ~$[m l] ] | ?* ] .o.
-[ [ ?* f:l l:f ?* []:%+Met | ~$[f l] ] | ?* ] .o.
-[ [ ?* h:d d:h ?* []:%+Met | ~$[h d] ] | ?* ] .o.
-[ [ ?* h:b b:h ?* []:%+Met | ~$[h b] ] | ?* ] .o.
-[ [ ?* h:g g:h ?* []:%+Met | ~$[h g] ] | ?* ] 
+define Shuffle [
+ [ [?* m:l l:m ?* []:%+Met]/GENTAGS | ~$[m l]/GENTAGS ] | ?* ].o.
+[ [ [?* f:l l:f ?* []:%+Met]/GENTAGS | ~$[f l]/GENTAGS ] | ?* ] .o.
+[ [ [?* h:d d:h ?* []:%+Met]/GENTAGS | ~$[h d]/GENTAGS ] | ?* ] .o.
+[ [ [?* h:b b:h ?* []:%+Met]/GENTAGS | ~$[h b]/GENTAGS ] | ?* ] .o.
+[ [ [?* h:g g:h ?* []:%+Met]/GENTAGS | ~$[h g]/GENTAGS ] | ?* ]
 ;
 
 define DeletionVowel V (->) %+DelV ;
+#define DeletionVowel V (->) 0 ;
+
+define GenPrimaryStress a (->) %[aPrimaryStress%], e (->) %[ePrimaryStress%], 
+    i (->)  %[iPrimaryStress%], I (->) %[IPrimaryStress%],
+    o (->) %[oPrimaryStress%], u (->) %[uPrimaryStress%] ;
+
+define GenSecondaryStress a (->) %[aSecondaryStress%], 
+    e (->) %[eSecondaryStress%], i (->)  %[iSecondaryStress%], 
+    I (->) %[ISecondaryStress%], o (->) %[oSecondaryStress%], 
+    u (->) %[uSecondaryStress%] ;
+
+define GenStress GenPrimaryStress .o. GenSecondaryStress ;
 
 #define Gen [ Shuffle .o. DeletionVowel .o. Syllabify ] ;
-define Gen [ Syllabify ] ;
+
+# Add primary stress to all syllables
+#
+# Then add a constraint that limits primary stress to one per word
+# And another constraint that limits primary stress to first syllable
+#define Gen [ DeletionVowel .o. GenStress .o. Syllabify ] ;
+define Gen [ DeletionVowel .o. GenStress .o. Shuffle .o. Syllabify ] ;
 
 ######################### OT CONSTRAINTS #############################
 
@@ -128,11 +162,15 @@ define IdentVoice [ %+DeltaVoice -> ... {*}] ;
 
 define IdentNasal [ %+DeltaNasal -> ... {*}] ;
 
+define MaxV [ %+DelV -> ... {*}] ;
+
 # Markedness constraints
 
-define NoGlottObs [ [ GLOTTAL OBSTRUENT ]/[GENTAGS | %+]-> ... {*}] ;
+define NoGlottObs [ [ GLOTTAL OBSTRUENT ]/[GENTAGS | %+ | "."]-> ... {*}] ;
 
 define NoComplexOnset [C C]/[GENTAGS | %+] -> ... {*} || EDGE _ ;
+
+define NoComplexCoda [C C]/[GENTAGS | %+ ] -> ... {*} || _ EDGE ;
 
 # If a syllable is all consonants, it violates this
 # If we use ~$[V], are we okay?
@@ -140,35 +178,83 @@ define NoComplexOnset [C C]/[GENTAGS | %+] -> ... {*} || EDGE _ ;
 # but it's minimal matching? not greedy?
 define SonorantNucleus ~$V -> ... {*} || EDGE _ EDGE ;
 
-define HasOnset V -> ... {*} || EDGE/[GENTAGS | %+] _ ;
+define HasOnset V -> ... {*} || EDGE/[GENTAGS | %+ ] _ ;
 
-define SSP SEGMENT* V+ C+ V+ SEGMENT* -> {*} || EDGE/[GENTAGS | %+ ] _ ;
+define HasPrimaryStress ~$PRIMARYSTRESS -> ... {*} || .#. _ .#. ;
+
+define OnlyOnePrimaryStress $[PRIMARYSTRESS ?* PRIMARYSTRESS] -> ... {*} || .#. _ .#. ;
+
+define NoStressClash SS/[GENTAGS | %+] "." SS/[GENTAGS | %+ ] -> ... {*} ;
+
+# I might prefer to do this as binary feet
+define NoDoubledUnstressed USS/[GENTAGS | %+] "." USS/[GENTAGS | %+ ] -> ... {*} ;
+
+# Is this why syllabification is breaking?
+define SSP [SEGMENT* V+ C+ V+ SEGMENT*]/[GENTAGS | %+] -> ... {*} || EDGE _ EDGE;
+
+define InitialStress ~$PRIMARYSTRESS -> ... {*} || .#. _ EDGE/[GENTAGS | %+] ;
+
+# No unstressed high vowels between two stressed syllables
+define NoUnstressedHighVowel C*/[GENTAGS | %+] [ u | i | I ] C*/[GENTAGS | %+] 
+    -> ... {*} || SS/[GENTAGS | %+] "." _ "." SS/[GENTAGS | %+ ];
 
 ########################## READABILITY ##############################
 
 # Remove tags, turn placeholders to IPA
+# ' is currently glottal stop
 define Pretty [ GENTAGS | %+ ] -> 0 .o.
 I -> ɨ;
 
+define Readable [GENTAGS | %+ ] -> 0 ;
 
 # Letting through plenty of complex onsets when it doesn't have to
-# TODO/FIXME - maybe next we should be assigning stress, not syllabifying?
+# TODO/FIXME 
+# Shuffle has now broken syllabification
 read regex Morphology .o. Gen 
 .o. SonorantNucleus .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
 .o. HasOnset .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
 .o. SSP .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
-#.o. NoComplexOnset .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
-#.o. Linearity .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
-#.o. NoSonTSon .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
-#.o. IdentVoice .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
-#.o. StrongRootInitCons .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
-#.o. IdentNasal .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. NoComplexOnset .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
+.o. NoComplexCoda .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
+.o. HasPrimaryStress .O. Viol1 .O. Viol0 
+.o. OnlyOnePrimaryStress .O. Viol1 .O. Viol0 
+.o. NoStressClash .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. NoDoubledUnstressed .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. InitialStress .O. Viol1 .O. Viol0 .o. Pardon
+.o. NoUnstressedHighVowel .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. MaxV .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. NoGlottObs .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
+#.o. NoGlottObs .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+#.o. Linearity .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 #.o. Pretty
+.o. Readable
 ;
 
 echo ** hIgIp
 down hIgIp;
-#echo ** puhIgIp
-#down pu+hIgIp;
-#echo ** hIgIpIn
-#down hIgIp+In;
+echo ** hIgIpIn
+down hIgIp+In;
+echo ** puhIgIp
+down pu+hIgIp;
+
+echo ** hIdIm
+down hIdIm;
+echo ** hIdIm+In
+down hIdIm+In;
+echo ** pu+hIdIm
+down pu+hIdIm;
+
+echo ** hIdIn
+down hIdIn;
+echo ** hIdIn+In
+down hIdIn+In;
+echo ** pu+hIdIn
+down pu+hIdIn;
+
+echo ** gihib
+down gihib;
+echo ** gihib+In
+down gihib+In;
+echo ** pu+gihib
+down pu+gihib;
+
