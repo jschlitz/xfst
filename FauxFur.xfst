@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # Faux Fur
 
 # Morphology
@@ -9,20 +11,23 @@ define ROOTS {lat} | {ba} | {mul} ;
 ############################# BASIC DEFINITIONS #########################
 
 define V [ a | e | i | o | u ] ;
-define C [ b | d | j | k | l | m | t ] ;
+define C [ b | d | f | g | j | %[PalatalJ%] | k | l | m | n | %[Engma%] | %[PalatalN%] | r | s | t | w | y ] ;
 
 define SEGMENTS [ V | C ] ;
 
 define BILABIAL [ b | m | f ] ;
 define SONORANT [ V | l ] ;
+define NASAL [ m | n | %[Engma%] %[PalatalN%] ] ;
 
 define PERSON [ %+1st | %+2nd | %+3rd] ;
 define NUMBER [ %+Sing | %+Pl ] ;
 define TENSE [ %+Perfect ] ;
 
-define GENTAGS [ %+DeltaVoice | %+Met ] ;
+define GENTAGS [ %+DeltaNasal | %+DeltaVoice | %+Met ] ;
 
 define TAGS [ PERSON | NUMBER | TENSE ] ;
+
+define BOUNDARY [ %+ | .#. ] ;
 
 ############################# MORPHOLOGY ################################
 
@@ -34,11 +39,8 @@ define Metathesizes ROOTS [ %+1st NUMBER | %+2nd NUMBER | %+3rd %+Pl ] TENSE;
 
 define Reorder [ l:a a:l ?* | l:e e:l ?* | l:i i:l ?* | l:o o:l ?* |
 l:u u:l ?* | m:a a:m ?*  | m:e e:m ?* | m:i i:m ?* | m:o o:m ?* | m:u u:m ?* |
-b:a a:b ?*  |
-b:e e:b ?* |
-b:i i:b ?* |
-b:o o:b ?* |
-b:u u:b ?* 
+b:a a:b ?*  | b:e e:b ?* | b:i i:b ?* | b:o o:b ?* | b:u u:b ?* |
+d:a a:d ?*  | d:e e:d ?* | d:i i:d ?* | d:o o:d ?* | d:u u:d ?* 
 ] ;
 
 define NoMetathesis ROOTS %+3rd %+Sing TENSE ;
@@ -71,17 +73,23 @@ define Morphology Personal1 .o. PersPrefixes .o. AddTense ;
 
 define VoiceCoronal t (->) d %+DeltaVoice ;
 
+define Denasalize n (->) d %+DeltaNasal .o.
+m (->) b %+DeltaNasal .o.
+%[PalatalN%] (->) t j %+DeltaNasal .o.
+%[Engma%] (->) g %+DeltaNasal 
+;
+
 # Applies more than once, BUT ends up with interspersed tags
 define Shuffle [ [ ?* m:l l:m ?* []:%+Met | ~$[m l] ] | ?* ] .o.
 [ [ ?* f:l l:f ?* []:%+Met | ~$[f l] ] | ?* ] .o.
-[ [ ?* b:l l:f ?* []:%+Met | ~$[f l] ] | ?* ] ;
-
-# Cleanup?
-# 0:K \K+ K:0 ?* | \K* ;
+[ [ ?* b:l l:b ?* []:%+Met | ~$[b l] ] | ?* ] .o.
+[ [ ?* d:l l:d ?* []:%+Met | ~$[d l] ] | ?* ] 
+;
 
 # OT Constraints
 
-define Gen [ VoiceCoronal .o. Shuffle ] ;
+define Gen [ VoiceCoronal .o. Denasalize .o. Shuffle ] ;
+#define Gen [ VoiceCoronal .o. Shuffle ] ;
 
 ######################### OT CONSTRAINTS #############################
 
@@ -129,90 +137,126 @@ define Linearity [ %+Met -> ... {*}] ;
 
 define IdentVoice [ %+DeltaVoice -> ... {*}] ;
 
+define IdentNasal [ %+DeltaNasal -> ... {*}] ;
+
 # Markedness constraints
 
 define NoBL [ [ BILABIAL l ]/[GENTAGS | %+]-> ... {*}] ;
 
-# Can this handle overlapping contexts?
-define NoSonTSon [ SONORANT t SONORANT ]/[GENTAGS | %+] -> ... {*} ;
+define NoSonTSon t -> t {*} || SONORANT/[GENTAGS | %+] _ SONORANT/[GENTAGS | %+ ];
+
+define StrongRootInitCons [ NASAL -> ... {*} || BOUNDARY _ ] ;
 
 ########################## READABILITY ##############################
 
-define Pretty [ GENTAGS | %+ ] -> 0 ;
-
-read regex Morphology ;
-
-
-
-echo Forms of /lat/
-
-echo lat+1st+Sing+Perfect
-down lat+1st+Sing+Perfect
-
-echo lat+2nd+Sing+Perfect
-down lat+2nd+Sing+Perfect
-
-echo lat+3rd+Sing+Perfect
-down lat+3rd+Sing+Perfect
-
-echo lat+1st+Pl+Perfect
-down lat+1st+Pl+Perfect
-
-echo lat+2nd+Pl+Perfect
-down lat+2nd+Pl+Perfect
-
-echo lat+3rd+Pl+Perfect
-down lat+3rd+Pl+Perfect
-
-echo Forms of /ba/
-
-echo ba+1st+Sing+Perfect
-down ba+1st+Sing+Perfect
-
-echo ba+2nd+Sing+Perfect
-down ba+2nd+Sing+Perfect
-
-echo ba+3rd+Sing+Perfect
-down ba+3rd+Sing+Perfect
-
-echo ba+1st+Pl+Perfect
-down ba+1st+Pl+Perfect
-
-echo ba+2nd+Pl+Perfect
-down ba+2nd+Pl+Perfect
-
-echo ba+3rd+Pl+Perfect
-down ba+3rd+Pl+Perfect
-
-echo Forms of /mul/
-
-echo mul+1st+Sing+Perfect
-down mul+1st+Sing+Perfect
-
-echo mul+2nd+Sing+Perfect
-down mul+2nd+Sing+Perfect
-
-echo mul+3rd+Sing+Perfect
-down mul+3rd+Sing+Perfect
-
-echo mul+1st+Pl+Perfect
-down mul+1st+Pl+Perfect
-
-echo mul+2nd+Pl+Perfect
-down mul+2nd+Pl+Perfect
-
-echo mul+3rd+Pl+Perfect
-down mul+3rd+Pl+Perfect
+# Remove tags, turn placeholders to IPA
+define Pretty [ GENTAGS | %+ ] -> 0 .o.
+%[PalatalJ%] -> ɟ .o.
+%[PalatalN%] -> ɲ .o.
+%[Engma%] -> ŋ ;
 
 read regex Morphology .o. Gen 
 .o. NoBL .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. Linearity .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
-.o. NoSonTSon .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
+.o. NoSonTSon .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. IdentVoice .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. StrongRootInitCons .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. IdentNasal .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. Pretty
 ;
 
-echo After Gen
+echo Real order
+echo Forms of /lat/
+
+echo **
+echo lat+1st+Sing+Perfect
+down lat+1st+Sing+Perfect
+
+echo **
+echo lat+2nd+Sing+Perfect
+down lat+2nd+Sing+Perfect
+
+echo **
+echo lat+3rd+Sing+Perfect
+down lat+3rd+Sing+Perfect
+
+echo **
+echo lat+1st+Pl+Perfect
+down lat+1st+Pl+Perfect
+
+echo **
+echo lat+2nd+Pl+Perfect
+down lat+2nd+Pl+Perfect
+
+echo **
+echo lat+3rd+Pl+Perfect
+down lat+3rd+Pl+Perfect
+
+echo **
+echo Forms of /ba/
+
+echo **
+echo ba+1st+Sing+Perfect
+down ba+1st+Sing+Perfect
+
+echo **
+echo ba+2nd+Sing+Perfect
+down ba+2nd+Sing+Perfect
+
+echo **
+echo ba+3rd+Sing+Perfect
+down ba+3rd+Sing+Perfect
+
+echo **
+echo ba+1st+Pl+Perfect
+down ba+1st+Pl+Perfect
+
+echo **
+echo ba+2nd+Pl+Perfect
+down ba+2nd+Pl+Perfect
+
+echo **
+echo ba+3rd+Pl+Perfect
+down ba+3rd+Pl+Perfect
+
+echo **
+echo Forms of /mul/
+
+echo **
+echo mul+1st+Sing+Perfect
+down mul+1st+Sing+Perfect
+
+echo **
+echo mul+2nd+Sing+Perfect
+down mul+2nd+Sing+Perfect
+
+echo **
+echo mul+3rd+Sing+Perfect
+down mul+3rd+Sing+Perfect
+
+echo **
+echo mul+1st+Pl+Perfect
+down mul+1st+Pl+Perfect
+
+echo **
+echo mul+2nd+Pl+Perfect
+down mul+2nd+Pl+Perfect
+
+echo **
+echo mul+3rd+Pl+Perfect
+down mul+3rd+Pl+Perfect
+
+read regex Morphology .o. Gen 
+.o. IdentNasal .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. StrongRootInitCons .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. Linearity .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. NoBL .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. IdentVoice .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. NoSonTSon .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. Pretty
+;
+
+echo Reordered
 echo Forms of /lat/
 
 echo **
