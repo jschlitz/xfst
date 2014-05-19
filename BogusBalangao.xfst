@@ -1,0 +1,142 @@
+# -*- coding: utf-8 -*-
+
+# Faux Fur
+
+# Morphology
+
+################################## DATA #################################
+
+define ROOTS {hIgIp} | {hIdIm} | {hIdIn} | {gihib} ;
+
+############################# BASIC DEFINITIONS #########################
+
+define V [ a | e | i | I | o | u ] ;
+define C [ b | d | g | h | m | n | p | ' ] ;
+
+define SEGMENT [ V | C ] ;
+
+define HighV [ u | i ] ;
+define GLOTTAL [ h | ' ] ;
+# sholud call this "non-glottal obstruent"
+define OBSTRUENT [ b | g | m | n | p ] ;
+
+define GENTAGS [ %+DelV | %+Met ] ;
+
+#define TAGS [ PERSON | NUMBER | TENSE ] ;
+
+#define BOUNDARY [ %+ | .#. | . ] ;
+define BOUNDARY [ %+ | .#. | %. ] ;
+define EDGE [ .#. | %. ] ;
+
+# Syllable boundary
+define SB [~$%. %. ~$%.];
+
+define Light [C* V];
+define Heavy [Light SEGMENT+];
+
+define S [ Heavy | Light ] ;
+
+############################# MORPHOLOGY ################################
+
+# To do: allow free order in tags
+# Do metathesis first
+# All persons and numbers except 3Sing
+# Tags contain 1st, or 2nd, or 3rd and Pl
+
+define PREFIXES [ {'i} | {ma} | {pu} ] %+ ;
+define SUFFIXES %+ [ {In} ] ;
+
+define Morphology (PREFIXES) ROOTS (SUFFIXES);
+
+################################### GEN ##################################
+
+define Syllabify [ C* V+ C* ]/[%+] @-> ... "." || _ [C V]/[%+] ;
+
+define VoiceCoronal t (->) d %+DeltaVoice ;
+
+define Denasalize n (->) d %+DeltaNasal .o.
+m (->) b %+DeltaNasal .o.
+%[PalatalN%] (->) t j %+DeltaNasal .o.
+%[Engma%] (->) g %+DeltaNasal 
+;
+
+# Applies more than once, BUT ends up with interspersed tags
+define Shuffle [ [ ?* m:l l:m ?* []:%+Met | ~$[m l] ] | ?* ] .o.
+[ [ ?* f:l l:f ?* []:%+Met | ~$[f l] ] | ?* ] .o.
+[ [ ?* h:d d:h ?* []:%+Met | ~$[h d] ] | ?* ] .o.
+[ [ ?* h:b b:h ?* []:%+Met | ~$[h b] ] | ?* ] .o.
+[ [ ?* h:g g:h ?* []:%+Met | ~$[h g] ] | ?* ] 
+;
+
+define Gen [ Shuffle .o. Syllabify ] ;
+#define Gen [ VoiceCoronal .o. Shuffle ] ;
+
+######################### OT CONSTRAINTS #############################
+
+# We use asterisks to mark constraint violations. Ordinary constraints
+# such as Lapse assign single asterisks as the violation marks and the
+# candidate with the fewest number is selected. Gradient constraints
+# such as AllFeetFirst mark violations with sequences of asterisks.
+# The number increases with distance from the word edge.
+
+# Every instance of * in an output candidate is a violation.
+
+define Viol ${*};
+
+# We prune candidates with "lenient composition" that eliminates
+# candidates that violate the constraint provided that at least
+# one output candidate survives.
+
+define Viol0 ~Viol;        # No violations
+define Viol1 ~[Viol^2];    # At most one violation
+define Viol2 ~[Viol^3];    # At most two violations
+define Viol3 ~[Viol^4];    # etc.
+define Viol4 ~[Viol^5];
+define Viol5 ~[Viol^6];
+define Viol6 ~[Viol^7];
+define Viol7 ~[Viol^8];
+define Viol8 ~[Viol^9];
+define Viol9 ~[Viol^10];
+define Viol10 ~[Viol^11];
+define Viol11 ~[Viol^12];
+define Viol12 ~[Viol^13];
+define Viol13 ~[Viol^14];
+define Viol14 ~[Viol^15];
+define Viol15 ~[Viol^16];
+
+# This eliminates the violation marks after the candidate set has
+# been pruned by a constraint.
+
+define Pardon {*} -> 0;
+
+########################## CONSTRAINTS ##############################
+
+# Faithfulness constraints
+
+define Linearity [ %+Met -> ... {*}] ;
+
+define IdentVoice [ %+DeltaVoice -> ... {*}] ;
+
+define IdentNasal [ %+DeltaNasal -> ... {*}] ;
+
+# Markedness constraints
+
+define NoGlottObs [ [ GLOTTAL OBSTRUENT ]/[GENTAGS | %+]-> ... {*}] ;
+
+########################## READABILITY ##############################
+
+# Remove tags, turn placeholders to IPA
+define Pretty [ GENTAGS | %+ ] -> 0 .o.
+I -> ɨ;
+
+read regex Morphology .o. Gen ;
+#read regex Morphology .o. Gen 
+#.o. NoBL .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+#.o. Linearity .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+#.o. NoSonTSon .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+#.o. IdentVoice .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+#.o. StrongRootInitCons .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+#.o. IdentNasal .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+#.o. Pretty
+;
+
