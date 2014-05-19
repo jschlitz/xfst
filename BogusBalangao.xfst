@@ -110,6 +110,7 @@ define Syllabify SEGMENT (->) ... "." || _ SEGMENT/[GENTAGS | %+] ;
 #[ [ [?* d:t t:d ?* []:%+Met]/GENTAGS | ~$[d t]/GENTAGS ] | ?* ]
 #;
 
+# An easy fix - only need interspersed GENTAGS ./. with m:l l:m ? not ?* ?
 define Shuffle [
 # Do we need all three alternations? No, but it's using too much memory
  [?* m:l l:m ?* []:%+Met]/GENTAGS | ?* ].o.
