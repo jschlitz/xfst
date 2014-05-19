@@ -2,13 +2,10 @@
 
 # Bogus Balangao
 
-# Morphology
-
 ################################## DATA #################################
 
 # Simplify for syllabification
 define ROOTS {hIgIp} | {hIdIm} | {hIdIn} | {gihib} ;
-#define ROOTS {hIgIp} ;
 
 ############################# BASIC DEFINITIONS #########################
 
@@ -82,15 +79,63 @@ define Morphology (PREFIXES) ROOTS | ROOTS (SUFFIXES);
 define Syllabify SEGMENT (->) ... "." || _ SEGMENT/[GENTAGS | %+] ;
 #define Syllabify SEGMENT (->) ... "." || _ [GENTAGS | %+]* SEGMENT ;
 
+# Can we do this with rules instead?  And commas?  Do we really have to compose all this?
+# m l (->) l m %+Met
+# Do we risk losing intervening tags?  What happens to %DelV?
 # Applies more than once, BUT ends up with interspersed tags
-define Shuffle [
- [ [?* m:l l:m ?* []:%+Met]/GENTAGS | ~$[m l]/GENTAGS ] | ?* ].o.
-[ [ [?* f:l l:f ?* []:%+Met]/GENTAGS | ~$[f l]/GENTAGS ] | ?* ] .o.
-[ [ [?* h:d d:h ?* []:%+Met]/GENTAGS | ~$[h d]/GENTAGS ] | ?* ] .o.
-[ [ [?* h:b b:h ?* []:%+Met]/GENTAGS | ~$[h b]/GENTAGS ] | ?* ] .o.
-[ [ [?* h:g g:h ?* []:%+Met]/GENTAGS | ~$[h g]/GENTAGS ] | ?* ]
-;
+#define Shuffle [
+# Do we need all three alternations?
+ #[ [?* m:l l:m ?* []:%+Met]/GENTAGS | ~$[m l]/GENTAGS ] | ?* ].o.
+#[ [ [?* f:l l:f ?* []:%+Met]/GENTAGS | ~$[f l]/GENTAGS ] | ?* ] .o.
+#[ [ [?* h:d d:h ?* []:%+Met]/GENTAGS | ~$[h d]/GENTAGS ] | ?* ] .o.
+#[ [ [?* h:b b:h ?* []:%+Met]/GENTAGS | ~$[h b]/GENTAGS ] | ?* ] .o.
+#[ [ [?* h:g g:h ?* []:%+Met]/GENTAGS | ~$[h g]/GENTAGS ] | ?* ] .o.
+#[ [ [?* b:d d:b ?* []:%+Met]/GENTAGS | ~$[b d]/GENTAGS ] | ?* ] .o.
+#[ [ [?* b:g g:b ?* []:%+Met]/GENTAGS | ~$[b g]/GENTAGS ] | ?* ] .o.
+#[ [ [?* b:h h:b ?* []:%+Met]/GENTAGS | ~$[b h]/GENTAGS ] | ?* ] .o.
+#[ [ [?* b:k k:b ?* []:%+Met]/GENTAGS | ~$[b k]/GENTAGS ] | ?* ] .o.
+#[ [ [?* b:m m:b ?* []:%+Met]/GENTAGS | ~$[b m]/GENTAGS ] | ?* ] .o.
+#[ [ [?* b:n n:b ?* []:%+Met]/GENTAGS | ~$[b n]/GENTAGS ] | ?* ] .o.
+#[ [ [?* b:p p:b ?* []:%+Met]/GENTAGS | ~$[b p]/GENTAGS ] | ?* ] .o.
+#[ [ [?* b:q q:b ?* []:%+Met]/GENTAGS | ~$[b q]/GENTAGS ] | ?* ] .o.
+#[ [ [?* b:t t:b ?* []:%+Met]/GENTAGS | ~$[b t]/GENTAGS ] | ?* ] .o.
+#[ [ [?* d:b d:d ?* []:%+Met]/GENTAGS | ~$[d d]/GENTAGS ] | ?* ] .o.
+#[ [ [?* d:g g:d ?* []:%+Met]/GENTAGS | ~$[d g]/GENTAGS ] | ?* ] .o.
+#[ [ [?* d:h h:d ?* []:%+Met]/GENTAGS | ~$[d h]/GENTAGS ] | ?* ] .o.
+#[ [ [?* d:k k:d ?* []:%+Met]/GENTAGS | ~$[d k]/GENTAGS ] | ?* ] .o.
+#[ [ [?* d:m m:d ?* []:%+Met]/GENTAGS | ~$[d m]/GENTAGS ] | ?* ] .o.
+#[ [ [?* d:n n:d ?* []:%+Met]/GENTAGS | ~$[d n]/GENTAGS ] | ?* ] .o.
+#[ [ [?* d:p p:d ?* []:%+Met]/GENTAGS | ~$[d p]/GENTAGS ] | ?* ] .o.
+#[ [ [?* d:q q:d ?* []:%+Met]/GENTAGS | ~$[d q]/GENTAGS ] | ?* ] .o.
+#[ [ [?* d:t t:d ?* []:%+Met]/GENTAGS | ~$[d t]/GENTAGS ] | ?* ]
+#;
 
+define Shuffle [
+# Do we need all three alternations? No, but it's using too much memory
+ [?* m:l l:m ?* []:%+Met]/GENTAGS | ?* ].o.
+#[ [?* f:l l:f ?* []:%+Met]/GENTAGS | ?* ] .o.
+[ [?* h:d d:h ?* []:%+Met]/GENTAGS | ?* ] .o.
+[ [?* h:b b:h ?* []:%+Met]/GENTAGS | ?* ] .o.
+[ [?* h:g g:h ?* []:%+Met]/GENTAGS | ?* ] .o.
+#[ [?* b:d d:b ?* []:%+Met]/GENTAGS | ?* ] .o.
+#[ [?* b:g g:b ?* []:%+Met]/GENTAGS | ?* ] .o.
+#[ [?* b:h h:b ?* []:%+Met]/GENTAGS | ?* ] .o.
+#[ [?* b:k k:b ?* []:%+Met]/GENTAGS | ?* ] .o.
+#[ [?* b:m m:b ?* []:%+Met]/GENTAGS | ?* ] .o.
+#[ [?* b:n n:b ?* []:%+Met]/GENTAGS | ?* ] .o.
+#[ [?* b:p p:b ?* []:%+Met]/GENTAGS | ?* ] .o.
+#[ [?* b:q q:b ?* []:%+Met]/GENTAGS | ?* ] .o.
+#[ [?* b:t t:b ?* []:%+Met]/GENTAGS | ?* ] .o.
+#[ [?* d:b d:d ?* []:%+Met]/GENTAGS | ?* ] .o.
+#[ [?* d:g g:d ?* []:%+Met]/GENTAGS | ?* ] .o.
+#[ [?* d:h h:d ?* []:%+Met]/GENTAGS | ?* ] .o.
+#[ [?* d:k k:d ?* []:%+Met]/GENTAGS | ?* ] .o.
+#[ [?* d:m m:d ?* []:%+Met]/GENTAGS | ?* ] .o.
+#[ [?* d:n n:d ?* []:%+Met]/GENTAGS | ?* ] .o.
+#[ [?* d:p p:d ?* []:%+Met]/GENTAGS | ?* ] .o.
+#[ [?* d:q q:d ?* []:%+Met]/GENTAGS | ?* ] .o.
+[ [?* d:t t:d ?* []:%+Met]/GENTAGS | ?* ]
+;
 define DeletionVowel V (->) %+DelV ;
 #define DeletionVowel V (->) 0 ;
 
@@ -258,3 +303,4 @@ down gihib+In;
 echo ** pu+gihib
 down pu+gihib;
 
+# cleanup net ?
