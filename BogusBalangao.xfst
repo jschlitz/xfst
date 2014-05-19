@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
-# Faux Fur
+# Bogus Balangao
 
 # Morphology
 
 ################################## DATA #################################
 
-define ROOTS {hIgIp} | {hIdIm} | {hIdIn} | {gihib} ;
+# Simplify for syllabification
+#define ROOTS {hIgIp} | {hIdIm} | {hIdIn} | {gihib} ;
+define ROOTS {hIgIp} ;
 
 ############################# BASIC DEFINITIONS #########################
 
@@ -19,6 +21,7 @@ define HighV [ u | i ] ;
 define GLOTTAL [ h | ' ] ;
 # sholud call this "non-glottal obstruent"
 define OBSTRUENT [ b | g | m | n | p ] ;
+define SONORANT [ V ] ;
 
 define GENTAGS [ %+DelV | %+Met ] ;
 
@@ -46,11 +49,15 @@ define S [ Heavy | Light ] ;
 define PREFIXES [ {'i} | {ma} | {pu} ] %+ ;
 define SUFFIXES %+ [ {In} ] ;
 
-define Morphology (PREFIXES) ROOTS (SUFFIXES);
+#define Morphology (PREFIXES) ROOTS | ROOTS (SUFFIXES);
+define Morphology ROOTS ;
 
 ################################### GEN ##################################
 
-define Syllabify [ C* V+ C* ]/[%+] @-> ... "." || _ [C V]/[%+] ;
+# Probably need to change this because it gets complex codas?
+# or is that a problem?
+#define Syllabify [ C* V+ C* ]/[GENTAGS | %+] @-> ... "." || _ [C V]/[GENTAGS | %+] ;
+define Syllabify SEGMENT (->) ... "." || _ SEGMENT/[GENTAGS | %+] ;
 
 define VoiceCoronal t (->) d %+DeltaVoice ;
 
@@ -68,8 +75,10 @@ define Shuffle [ [ ?* m:l l:m ?* []:%+Met | ~$[m l] ] | ?* ] .o.
 [ [ ?* h:g g:h ?* []:%+Met | ~$[h g] ] | ?* ] 
 ;
 
-define Gen [ Shuffle .o. Syllabify ] ;
-#define Gen [ VoiceCoronal .o. Shuffle ] ;
+define DeletionVowel V (->) %+DelV ;
+
+#define Gen [ Shuffle .o. DeletionVowel .o. Syllabify ] ;
+define Gen [ Syllabify ] ;
 
 ######################### OT CONSTRAINTS #############################
 
@@ -123,15 +132,32 @@ define IdentNasal [ %+DeltaNasal -> ... {*}] ;
 
 define NoGlottObs [ [ GLOTTAL OBSTRUENT ]/[GENTAGS | %+]-> ... {*}] ;
 
+define NoComplexOnset [C C]/[GENTAGS | %+] -> ... {*} || EDGE _ ;
+
+# If a syllable is all consonants, it violates this
+# If we use ~$[V], are we okay?
+# That might be a problem because it'll match syllable boundary
+# but it's minimal matching? not greedy?
+define SonorantNucleus ~$V -> ... {*} || EDGE _ EDGE ;
+
+define HasOnset V -> ... {*} || EDGE/[GENTAGS | %+] _ ;
+
+define SSP SEGMENT* V+ C+ V+ SEGMENT* -> {*} || EDGE/[GENTAGS | %+ ] _ ;
+
 ########################## READABILITY ##############################
 
 # Remove tags, turn placeholders to IPA
 define Pretty [ GENTAGS | %+ ] -> 0 .o.
 I -> ɨ;
 
-read regex Morphology .o. Gen ;
-#read regex Morphology .o. Gen 
-#.o. NoBL .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+
+# Letting through plenty of complex onsets when it doesn't have to
+# TODO/FIXME - maybe next we should be assigning stress, not syllabifying?
+read regex Morphology .o. Gen 
+.o. SonorantNucleus .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
+.o. HasOnset .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
+.o. SSP .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
+#.o. NoComplexOnset .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
 #.o. Linearity .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 #.o. NoSonTSon .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 #.o. IdentVoice .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
@@ -140,3 +166,9 @@ read regex Morphology .o. Gen ;
 #.o. Pretty
 ;
 
+echo ** hIgIp
+down hIgIp;
+#echo ** puhIgIp
+#down pu+hIgIp;
+#echo ** hIgIpIn
+#down hIgIp+In;
