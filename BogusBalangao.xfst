@@ -73,11 +73,7 @@ define Morphology (PREFIXES) ROOTS | ROOTS (SUFFIXES);
 
 ################################### GEN ##################################
 
-# Stopped working when Shuffle added
-# Is Shuffle introducing something odd?
-# %+Met is in Gentags
 define Syllabify SEGMENT (->) ... "." || _ SEGMENT/[GENTAGS | %+] ;
-#define Syllabify SEGMENT (->) ... "." || _ [GENTAGS | %+]* SEGMENT ;
 
 # Can we do this with rules instead?  And commas?  Do we really have to compose all this?
 # m l (->) l m %+Met
@@ -111,13 +107,20 @@ define Syllabify SEGMENT (->) ... "." || _ SEGMENT/[GENTAGS | %+] ;
 #;
 
 # An easy fix - only need interspersed GENTAGS ./. with m:l l:m ? not ?* ?
-define Shuffle [
 # Do we need all three alternations? No, but it's using too much memory
- [?* m:l l:m ?* []:%+Met]/GENTAGS | ?* ].o.
+#define Shuffle [
+#define Shuffle m l (->) l m %+Met,
+#m %DelV l (->) l %+DelV m %+Met,
+#h b (->) b h %+Met,
+#h %DelV b (->) b %+DelV h %+Met,
+#h d (->) d h %+Met,
+#h %DelV d (->) d %+DelV h %+Met,
+#h g (->) g h %+Met,
+#h %DelV g (->) g %+DelV h %+Met
 #[ [?* f:l l:f ?* []:%+Met]/GENTAGS | ?* ] .o.
-[ [?* h:d d:h ?* []:%+Met]/GENTAGS | ?* ] .o.
-[ [?* h:b b:h ?* []:%+Met]/GENTAGS | ?* ] .o.
-[ [?* h:g g:h ?* []:%+Met]/GENTAGS | ?* ] .o.
+#[ [?* h:d d:h ?* []:%+Met]/GENTAGS | ?* ] .o.
+#[ [?* h:b b:h ?* []:%+Met]/GENTAGS | ?* ] .o.
+#[ [?* h:g g:h ?* []:%+Met]/GENTAGS | ?* ] .o.
 #[ [?* b:d d:b ?* []:%+Met]/GENTAGS | ?* ] .o.
 #[ [?* b:g g:b ?* []:%+Met]/GENTAGS | ?* ] .o.
 #[ [?* b:h h:b ?* []:%+Met]/GENTAGS | ?* ] .o.
@@ -135,10 +138,22 @@ define Shuffle [
 #[ [?* d:n n:d ?* []:%+Met]/GENTAGS | ?* ] .o.
 #[ [?* d:p p:d ?* []:%+Met]/GENTAGS | ?* ] .o.
 #[ [?* d:q q:d ?* []:%+Met]/GENTAGS | ?* ] .o.
-[ [?* d:t t:d ?* []:%+Met]/GENTAGS | ?* ]
+#[ [?* d:t t:d ?* []:%+Met]/GENTAGS | ?* ]
+#;
+#
+define Shuffle h b (->) b h %+Met,
+h %+DelV b (->) b %+DelV h %+Met,
+h d (->) d h %+Met,
+h %+DelV d (->) d %+DelV h %+Met,
+h g (->) g h %+Met,
+h %+DelV g (->) g %+DelV h %+Met
+#define Shuffle h g (->) g h %+Met,
+#h %+DelV g (->) g %+DelV h %+Met,
+#define Shuffle h d (->) d h %+Met,
+#h %+DelV d (->) d %+DelV h %+Met
 ;
+
 define DeletionVowel V (->) %+DelV ;
-#define DeletionVowel V (->) 0 ;
 
 define GenPrimaryStress a (->) %[aPrimaryStress%], e (->) %[ePrimaryStress%], 
     i (->)  %[iPrimaryStress%], I (->) %[IPrimaryStress%],
@@ -157,8 +172,8 @@ define GenStress GenPrimaryStress .o. GenSecondaryStress ;
 #
 # Then add a constraint that limits primary stress to one per word
 # And another constraint that limits primary stress to first syllable
-#define Gen [ DeletionVowel .o. GenStress .o. Syllabify ] ;
 define Gen [ DeletionVowel .o. GenStress .o. Shuffle .o. Syllabify ] ;
+#define Gen [ DeletionVowel .o. Shuffle ] ;
 
 ######################### OT CONSTRAINTS #############################
 
@@ -268,40 +283,42 @@ read regex Morphology .o. Gen
 .o. NoDoubledUnstressed .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. InitialStress .O. Viol1 .O. Viol0 .o. Pardon
 .o. NoUnstressedHighVowel .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+#.o. MaxV .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
+# With pardon
 .o. MaxV .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
-.o. NoGlottObs .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
-#.o. NoGlottObs .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
-#.o. Linearity .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. NoGlottObs .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 #.o. Pretty
 .o. Readable
 ;
 
-echo ** hIgIp
-down hIgIp;
-echo ** hIgIpIn
-down hIgIp+In;
+# Need to get Linearity in there sometime
+
+#echo ** hIgIp
+#down hIgIp;
+#echo ** hIgIpIn
+#down hIgIp+In;
 echo ** puhIgIp
 down pu+hIgIp;
 
-echo ** hIdIm
-down hIdIm;
-echo ** hIdIm+In
-down hIdIm+In;
+#echo ** hIdIm
+#down hIdIm;
+#echo ** hIdIm+In
+#down hIdIm+In;
 echo ** pu+hIdIm
 down pu+hIdIm;
 
-echo ** hIdIn
-down hIdIn;
-echo ** hIdIn+In
-down hIdIn+In;
+#echo ** hIdIn
+#down hIdIn;
+#echo ** hIdIn+In
+#down hIdIn+In;
 echo ** pu+hIdIn
 down pu+hIdIn;
 
-echo ** gihib
-down gihib;
+#echo ** gihib
+#down gihib;
 echo ** gihib+In
 down gihib+In;
-echo ** pu+gihib
-down pu+gihib;
+#echo ** pu+gihib
+#down pu+gihib;
 
 # cleanup net ?
