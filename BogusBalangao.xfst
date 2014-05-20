@@ -75,85 +75,46 @@ define Morphology (PREFIXES) ROOTS | ROOTS (SUFFIXES);
 
 define Syllabify SEGMENT (->) ... "." || _ SEGMENT/[GENTAGS | %+] ;
 
-# Can we do this with rules instead?  And commas?  Do we really have to compose all this?
-# m l (->) l m %+Met
-# Do we risk losing intervening tags?  What happens to %DelV?
-# Applies more than once, BUT ends up with interspersed tags
-#define Shuffle [
-# Do we need all three alternations?
- #[ [?* m:l l:m ?* []:%+Met]/GENTAGS | ~$[m l]/GENTAGS ] | ?* ].o.
-#[ [ [?* f:l l:f ?* []:%+Met]/GENTAGS | ~$[f l]/GENTAGS ] | ?* ] .o.
-#[ [ [?* h:d d:h ?* []:%+Met]/GENTAGS | ~$[h d]/GENTAGS ] | ?* ] .o.
-#[ [ [?* h:b b:h ?* []:%+Met]/GENTAGS | ~$[h b]/GENTAGS ] | ?* ] .o.
-#[ [ [?* h:g g:h ?* []:%+Met]/GENTAGS | ~$[h g]/GENTAGS ] | ?* ] .o.
-#[ [ [?* b:d d:b ?* []:%+Met]/GENTAGS | ~$[b d]/GENTAGS ] | ?* ] .o.
-#[ [ [?* b:g g:b ?* []:%+Met]/GENTAGS | ~$[b g]/GENTAGS ] | ?* ] .o.
-#[ [ [?* b:h h:b ?* []:%+Met]/GENTAGS | ~$[b h]/GENTAGS ] | ?* ] .o.
-#[ [ [?* b:k k:b ?* []:%+Met]/GENTAGS | ~$[b k]/GENTAGS ] | ?* ] .o.
-#[ [ [?* b:m m:b ?* []:%+Met]/GENTAGS | ~$[b m]/GENTAGS ] | ?* ] .o.
-#[ [ [?* b:n n:b ?* []:%+Met]/GENTAGS | ~$[b n]/GENTAGS ] | ?* ] .o.
-#[ [ [?* b:p p:b ?* []:%+Met]/GENTAGS | ~$[b p]/GENTAGS ] | ?* ] .o.
-#[ [ [?* b:q q:b ?* []:%+Met]/GENTAGS | ~$[b q]/GENTAGS ] | ?* ] .o.
-#[ [ [?* b:t t:b ?* []:%+Met]/GENTAGS | ~$[b t]/GENTAGS ] | ?* ] .o.
-#[ [ [?* d:b d:d ?* []:%+Met]/GENTAGS | ~$[d d]/GENTAGS ] | ?* ] .o.
-#[ [ [?* d:g g:d ?* []:%+Met]/GENTAGS | ~$[d g]/GENTAGS ] | ?* ] .o.
-#[ [ [?* d:h h:d ?* []:%+Met]/GENTAGS | ~$[d h]/GENTAGS ] | ?* ] .o.
-#[ [ [?* d:k k:d ?* []:%+Met]/GENTAGS | ~$[d k]/GENTAGS ] | ?* ] .o.
-#[ [ [?* d:m m:d ?* []:%+Met]/GENTAGS | ~$[d m]/GENTAGS ] | ?* ] .o.
-#[ [ [?* d:n n:d ?* []:%+Met]/GENTAGS | ~$[d n]/GENTAGS ] | ?* ] .o.
-#[ [ [?* d:p p:d ?* []:%+Met]/GENTAGS | ~$[d p]/GENTAGS ] | ?* ] .o.
-#[ [ [?* d:q q:d ?* []:%+Met]/GENTAGS | ~$[d q]/GENTAGS ] | ?* ] .o.
-#[ [ [?* d:t t:d ?* []:%+Met]/GENTAGS | ~$[d t]/GENTAGS ] | ?* ]
-#;
+# Had Shuffle rules in this form, but - while it worked - it was 
+# very inefficient and led to memory problems
+#[ [?* m:l l:m ?* []:%+Met]/GENTAGS | ~$[m l]/GENTAGS ] | ?* ].o.
 
-# An easy fix - only need interspersed GENTAGS ./. with m:l l:m ? not ?* ?
-# Do we need all three alternations? No, but it's using too much memory
-#define Shuffle [
-#define Shuffle m l (->) l m %+Met,
-#m %DelV l (->) l %+DelV m %+Met,
-#h b (->) b h %+Met,
-#h %DelV b (->) b %+DelV h %+Met,
-#h d (->) d h %+Met,
-#h %DelV d (->) d %+DelV h %+Met,
-#h g (->) g h %+Met,
-#h %DelV g (->) g %+DelV h %+Met
-#[ [?* f:l l:f ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* h:d d:h ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* h:b b:h ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* h:g g:h ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* b:d d:b ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* b:g g:b ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* b:h h:b ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* b:k k:b ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* b:m m:b ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* b:n n:b ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* b:p p:b ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* b:q q:b ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* b:t t:b ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* d:b d:d ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* d:g g:d ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* d:h h:d ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* d:k k:d ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* d:m m:d ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* d:n n:d ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* d:p p:d ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* d:q q:d ?* []:%+Met]/GENTAGS | ?* ] .o.
-#[ [?* d:t t:d ?* []:%+Met]/GENTAGS | ?* ]
-#;
-#
-define Shuffle h b (->) b h %+Met,
-h %+DelV b (->) b %+DelV h %+Met,
-h d (->) d h %+Met,
-h %+DelV d (->) d %+DelV h %+Met,
-h g (->) g h %+Met,
-h %+DelV g (->) g %+DelV h %+Met
+define Shuffle h q (->) q h %+Met, q h (->) h q %+Met,
+h b (->) b h %+Met, h d (->) d h %+Met, h g (->) g h %+Met, 
+g h (->) h g %+Met, d h (->) h d %+Met, b h (->) h b %+Met, 
+h t (->) t h %+Met, t h (->) h t %+Met,
+h k (->) k h %+Met, k h (->) h k %+Met,
+h p (->) p h %+Met, p h (->) h p %+Met,
+q b (->) b q %+Met, q d (->) d q %+Met, q g (->) g q %+Met, 
+g q (->) q g %+Met, d q (->) q d %+Met, b q (->) q b %+Met,
+q t (->) t q %+Met, t q (->) q t %+Met,
+q k (->) k q %+Met, k q (->) q k %+Met,
+q p (->) p q %+Met, p q (->) q p %+Met,
+b d (->) d b %+Met, b g (->) g b %+Met, 
+g b (->) b g %+Met, d b (->) b d %+Met, 
+b t (->) t b %+Met, t b (->) b t %+Met,
+b k (->) k b %+Met, k b (->) b k %+Met,
+d g (->) g d %+Met, g d (->) d g %+Met, 
+d t (->) t d %+Met, t d (->) d t %+Met,
+d k (->) k d %+Met, k d (->) d k %+Met,
+g t (->) t g %+Met, t g (->) g t %+Met,
+g k (->) k g %+Met, k g (->) g k %+Met,
+k t (->) t k %+Met, t k (->) k t %+Met
+#t %+DelV h (->) h %+DelV t %+Met
 #define Shuffle h g (->) g h %+Met,
 #h %+DelV g (->) g %+DelV h %+Met,
 #define Shuffle h d (->) d h %+Met,
 #h %+DelV d (->) d %+DelV h %+Met
 ;
 
-define DeletionVowel V (->) %+DelV ;
+# Let's start moving these
+define DeletionVowel V (->) %+DelV .o. 
+# Need to let through things withot %+Delv
+0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] .o.  0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] .o.
+0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] .o.  0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] .o.
+0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] .o.  0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] .o.
+0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] .o.  0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] 
+;
 
 define GenPrimaryStress a (->) %[aPrimaryStress%], e (->) %[ePrimaryStress%], 
     i (->)  %[iPrimaryStress%], I (->) %[IPrimaryStress%],
@@ -293,32 +254,36 @@ read regex Morphology .o. Gen
 
 # Need to get Linearity in there sometime
 
-#echo ** hIgIp
-#down hIgIp;
-#echo ** hIgIpIn
-#down hIgIp+In;
+echo ** hIgIp
+down hIgIp;
+echo ** hIgIpIn
+down hIgIp+In;
+echo ** Should metathesize - expect pughip
 echo ** puhIgIp
 down pu+hIgIp;
 
-#echo ** hIdIm
-#down hIdIm;
-#echo ** hIdIm+In
-#down hIdIm+In;
+echo ** hIdIm
+down hIdIm;
+echo ** hIdIm+In
+down hIdIm+In;
+echo ** Should metathesize - expect pudhim
 echo ** pu+hIdIm
 down pu+hIdIm;
 
-#echo ** hIdIn
-#down hIdIn;
-#echo ** hIdIn+In
-#down hIdIn+In;
+echo ** hIdIn
+down hIdIn;
+echo ** hIdIn+In
+down hIdIn+In;
+echo ** Should metathesize - expect puhdin
 echo ** pu+hIdIn
 down pu+hIdIn;
 
-#echo ** gihib
-#down gihib;
+echo ** gihib
+down gihib;
+echo ** Should metathesize - expect gibhin
 echo ** gihib+In
 down gihib+In;
-#echo ** pu+gihib
-#down pu+gihib;
+echo ** pu+gihib
+down pu+gihib;
 
 # cleanup net ?
