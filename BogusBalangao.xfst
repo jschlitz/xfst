@@ -41,11 +41,9 @@ define SECONDARYSTRESS [ %[aSecondaryStress%] | %[eSecondaryStress%] |
     %[iSecondaryStress%] | %[ISecondaryStress%] | %[oSecondaryStress%] | 
     %[uSecondaryStress%] ] ;
 
-define GENTAGS [ %+DelV | %+Met | %+MetMorph ] ;
+define GENTAGS [ %+DelV | %+Met | %+MetCC | %+MetCV | %+MetVV | 
+    %+MetCV | %+MetWithinMorph | %+MetBetweenMorph ] ;
 
-#define TAGS [ PERSON | NUMBER | TENSE ] ;
-
-#define BOUNDARY [ %+ | .#. | . ] ;
 define BOUNDARY [ %+ | .#. | %. ] ;
 define EDGE [ .#. | %. ] ;
 
@@ -61,8 +59,6 @@ define USS [ Heavy | Light .o. ~$[STRESSED]] ;
 
 ############################# MORPHOLOGY ################################
 
-# To do: allow free order in tags
-
 define PREFIXES [ {qi} | {ma} | {pu} ] %+ ;
 define SUFFIXES %+ [ {In} | {to} ] ;
 
@@ -77,53 +73,174 @@ define Syllabify SEGMENT (->) ... "." || _ SEGMENT/[GENTAGS | %+] ;
 #[ [?* m:l l:m ?* []:%+Met]/GENTAGS | ~$[m l]/GENTAGS ] | ?* ].o.
 
 # Both within and across morpheme boundaries
-define Shuffle h q (->) q h %+Met, q h (->) h q %+Met,
-h b (->) b h %+Met, h d (->) d h %+Met, h g (->) g h %+Met, 
-g h (->) h g %+Met, d h (->) h d %+Met, b h (->) h b %+Met, 
-h t (->) t h %+Met, t h (->) h t %+Met,
-h k (->) k h %+Met, k h (->) h k %+Met,
-h p (->) p h %+Met, p h (->) h p %+Met,
-q b (->) b q %+Met, q d (->) d q %+Met, q g (->) g q %+Met, 
-g q (->) q g %+Met, d q (->) q d %+Met, b q (->) q b %+Met,
-q t (->) t q %+Met, t q (->) q t %+Met,
-q k (->) k q %+Met, k q (->) q k %+Met,
-q p (->) p q %+Met, p q (->) q p %+Met,
-b d (->) d b %+Met, b g (->) g b %+Met, 
-g b (->) b g %+Met, d b (->) b d %+Met, 
-b t (->) t b %+Met, t b (->) b t %+Met,
-b k (->) k b %+Met, k b (->) b k %+Met,
-d g (->) g d %+Met, g d (->) d g %+Met, 
-d t (->) t d %+Met, t d (->) d t %+Met,
-d k (->) k d %+Met, k d (->) d k %+Met,
-g t (->) t g %+Met, t g (->) g t %+Met,
-g k (->) k g %+Met, k g (->) g k %+Met,
-k t (->) t k %+Met, t k (->) k t %+Met,
-#define ShuffleAcross h %+ q (->) q %+ h %+MetMorph, q %+ h (->) h %+ q %+MetMorph,
-h %+ q (->) q %+ h %+MetMorph, q %+ h (->) h %+ q %+MetMorph,
-h %+ b (->) b %+ h %+MetMorph, h %+ d (->) d %+ h %+MetMorph, h %+ g (->) g %+ h %+MetMorph, 
-g %+ h (->) h %+ g %+MetMorph, d %+ h (->) h %+ d %+MetMorph, b %+ h (->) h %+ b %+MetMorph, 
-h %+ t (->) t %+ h %+MetMorph, t %+ h (->) h %+ t %+MetMorph,
-h %+ k (->) k %+ h %+MetMorph, k %+ h (->) h %+ k %+MetMorph,
-h %+ p (->) p %+ h %+MetMorph, p %+ h (->) h %+ p %+MetMorph,
-q %+ b (->) b %+ q %+MetMorph, q %+ d (->) d %+ q %+MetMorph, q %+ g (->) g %+ q %+MetMorph, 
-g %+ q (->) q %+ g %+MetMorph, d %+ q (->) q %+ d %+MetMorph, b %+ q (->) q %+ b %+MetMorph,
-q %+ t (->) t %+ q %+MetMorph, t %+ q (->) q %+ t %+MetMorph,
-q %+ k (->) k %+ q %+MetMorph, k %+ q (->) q %+ k %+MetMorph,
-q %+ p (->) p %+ q %+MetMorph, p %+ q (->) q %+ p %+MetMorph,
-b %+ d (->) d %+ b %+MetMorph, b %+ g (->) g %+ b %+MetMorph, 
-g %+ b (->) b %+ g %+MetMorph, d %+ b (->) b %+ d %+MetMorph, 
-b %+ t (->) t %+ b %+MetMorph, t %+ b (->) b %+ t %+MetMorph,
-b %+ k (->) k %+ b %+MetMorph, k %+ b (->) b %+ k %+MetMorph,
-d %+ g (->) g %+ d %+MetMorph, g %+ d (->) d %+ g %+MetMorph, 
-d %+ t (->) t %+ d %+MetMorph, t %+ d (->) d %+ t %+MetMorph,
-d %+ k (->) k %+ d %+MetMorph, k %+ d (->) d %+ k %+MetMorph,
-g %+ t (->) t %+ g %+MetMorph, t %+ g (->) g %+ t %+MetMorph,
-g %+ k (->) k %+ g %+MetMorph, k %+ g (->) g %+ k %+MetMorph,
-k %+ t (->) t %+ k %+MetMorph, t %+ k (->) k %+ t %+MetMorph
+define Shuffle a e (->) e a %+MetVV %+MetWithinMorph, e a (->) a e %+MetVV %+MetWithinMorph,
+a i (->) i a %+MetVV %+MetWithinMorph, i a (->) a i %+MetVV %+MetWithinMorph,
+a I (->) I a %+MetVV %+MetWithinMorph, I a (->) a I %+MetVV %+MetWithinMorph,
+a o (->) o a %+MetVV %+MetWithinMorph, o a (->) a o %+MetVV %+MetWithinMorph,
+a u (->) u a %+MetVV %+MetWithinMorph, u a (->) a u %+MetVV %+MetWithinMorph,
+e i (->) i e %+MetVV %+MetWithinMorph, i e (->) e i %+MetVV %+MetWithinMorph,
+e I (->) I e %+MetVV %+MetWithinMorph, I e (->) e I %+MetVV %+MetWithinMorph,
+e o (->) o e %+MetVV %+MetWithinMorph, o e (->) e o %+MetVV %+MetWithinMorph,
+e u (->) u e %+MetVV %+MetWithinMorph, u e (->) e u %+MetVV %+MetWithinMorph,
+i I (->) I i %+MetVV %+MetWithinMorph, I i (->) i I %+MetVV %+MetWithinMorph,
+i o (->) o i %+MetVV %+MetWithinMorph, o i (->) i o %+MetVV %+MetWithinMorph,
+i u (->) u i %+MetVV %+MetWithinMorph, u i (->) i u %+MetVV %+MetWithinMorph,
+I o (->) o I %+MetVV %+MetWithinMorph, o I (->) I o %+MetVV %+MetWithinMorph,
+I u (->) u I %+MetVV %+MetWithinMorph, u I (->) I u %+MetVV %+MetWithinMorph,
+o u (->) u o %+MetVV %+MetWithinMorph, u o (->) o u %+MetVV %+MetWithinMorph,
+a e (->) e a %+MetVV %+MetBetweenMorph, e a (->) a e %+MetVV %+MetBetweenMorph,
+a %+ i (->) i %+ a %+MetVV %+MetBetweenMorph, i %+ a (->) a %+ i %+MetVV %+MetBetweenMorph,
+a %+ I (->) I %+ a %+MetVV %+MetBetweenMorph, I %+ a (->) a %+ I %+MetVV %+MetBetweenMorph,
+a %+ o (->) o %+ a %+MetVV %+MetBetweenMorph, o %+ a (->) a %+ o %+MetVV %+MetBetweenMorph,
+a %+ u (->) u %+ a %+MetVV %+MetBetweenMorph, u %+ a (->) a %+ u %+MetVV %+MetBetweenMorph,
+e %+ i (->) i %+ e %+MetVV %+MetBetweenMorph, i %+ e (->) e %+ i %+MetVV %+MetBetweenMorph,
+e %+ I (->) I %+ e %+MetVV %+MetBetweenMorph, I %+ e (->) e %+ I %+MetVV %+MetBetweenMorph,
+e %+ o (->) o %+ e %+MetVV %+MetBetweenMorph, o %+ e (->) e %+ o %+MetVV %+MetBetweenMorph,
+e %+ u (->) u %+ e %+MetVV %+MetBetweenMorph, u %+ e (->) e %+ u %+MetVV %+MetBetweenMorph,
+i %+ I (->) I %+ i %+MetVV %+MetBetweenMorph, I %+ i (->) i %+ I %+MetVV %+MetBetweenMorph,
+i %+ o (->) o %+ i %+MetVV %+MetBetweenMorph, o %+ i (->) i %+ o %+MetVV %+MetBetweenMorph,
+i %+ u (->) u %+ i %+MetVV %+MetBetweenMorph, u %+ i (->) i %+ u %+MetVV %+MetBetweenMorph,
+I %+ o (->) o %+ I %+MetVV %+MetBetweenMorph, o %+ I (->) I %+ o %+MetVV %+MetBetweenMorph,
+I %+ u (->) u %+ I %+MetVV %+MetBetweenMorph, u %+ I (->) I %+ u %+MetVV %+MetBetweenMorph,
+o %+ u (->) u %+ o %+MetVV %+MetBetweenMorph, u %+ o (->) o %+ u %+MetVV %+MetBetweenMorph,
+h q (->) q h %+MetCC %+MetWithinMorph, q h (->) h q %+MetCC %+MetWithinMorph,
+h b (->) b h %+MetCC %+MetWithinMorph, h d (->) d h %+MetCC %+MetWithinMorph, 
+h g (->) g h %+MetCC %+MetWithinMorph, 
+g h (->) h g %+MetCC %+MetWithinMorph, d h (->) h d %+MetCC %+MetWithinMorph, 
+b h (->) h b %+MetCC %+MetWithinMorph, 
+h t (->) t h %+MetCC %+MetWithinMorph, t h (->) h t %+MetCC %+MetWithinMorph,
+h k (->) k h %+MetCC %+MetWithinMorph, k h (->) h k %+MetCC %+MetWithinMorph,
+h p (->) p h %+MetCC %+MetWithinMorph, p h (->) h p %+MetCC %+MetWithinMorph,
+q b (->) b q %+MetCC %+MetWithinMorph, q d (->) d q %+MetCC %+MetWithinMorph, 
+q g (->) g q %+MetCC %+MetWithinMorph %+MetWithinMorph, 
+g q (->) q g %+MetCC %+MetWithinMorph, d q (->) q d %+MetCC %+MetWithinMorph, 
+b q (->) q b %+MetCC %+MetWithinMorph %+MetWithinMorph,
+q t (->) t q %+MetCC %+MetWithinMorph, t q (->) q t %+MetCC %+MetWithinMorph,
+q k (->) k q %+MetCC %+MetWithinMorph, k q (->) q k %+MetCC %+MetWithinMorph,
+q p (->) p q %+MetCC %+MetWithinMorph, p q (->) q p %+MetCC %+MetWithinMorph,
+b d (->) d b %+MetCC %+MetWithinMorph, b g (->) g b %+MetCC %+MetWithinMorph, 
+g b (->) b g %+MetCC %+MetWithinMorph, d b (->) b d %+MetCC %+MetWithinMorph, 
+b t (->) t b %+MetCC %+MetWithinMorph, t b (->) b t %+MetCC %+MetWithinMorph,
+b k (->) k b %+MetCC %+MetWithinMorph, k b (->) b k %+MetCC %+MetWithinMorph,
+d g (->) g d %+MetCC %+MetWithinMorph, g d (->) d g %+MetCC %+MetWithinMorph, 
+d t (->) t d %+MetCC %+MetWithinMorph, t d (->) d t %+MetCC %+MetWithinMorph,
+d k (->) k d %+MetCC %+MetWithinMorph, k d (->) d k %+MetCC %+MetWithinMorph,
+g t (->) t g %+MetCC %+MetWithinMorph, t g (->) g t %+MetCC %+MetWithinMorph,
+g k (->) k g %+MetCC %+MetWithinMorph, k g (->) g k %+MetCC %+MetWithinMorph,
+k t (->) t k %+MetCC %+MetWithinMorph, t k (->) k t %+MetCC %+MetWithinMorph,
+h %+ q (->) q %+ h %+MetCC %+MetBetweenMorph, q %+ h (->) h %+ q %+MetCC %+MetBetweenMorph,
+h %+ b (->) b %+ h %+MetCC %+MetBetweenMorph, h %+ d (->) d %+ h %+MetCC %+MetBetweenMorph, h %+ g (->) g %+ h %+MetBetweenMorph, 
+g %+ h (->) h %+ g %+MetCC %+MetBetweenMorph, d %+ h (->) h %+ d %+MetCC %+MetBetweenMorph, b %+ h (->) h %+ b %+MetBetweenMorph, 
+h %+ t (->) t %+ h %+MetCC %+MetBetweenMorph, t %+ h (->) h %+ t %+MetCC %+MetBetweenMorph,
+h %+ k (->) k %+ h %+MetCC %+MetBetweenMorph, k %+ h (->) h %+ k %+MetCC %+MetBetweenMorph,
+h %+ p (->) p %+ h %+MetCC %+MetBetweenMorph, p %+ h (->) h %+ p %+MetCC %+MetBetweenMorph,
+q %+ b (->) b %+ q %+MetCC %+MetBetweenMorph, q %+ d (->) d %+ q %+MetCC %+MetBetweenMorph, q %+ g (->) g %+ q %+MetBetweenMorph, 
+g %+ q (->) q %+ g %+MetCC %+MetBetweenMorph, d %+ q (->) q %+ d %+MetCC %+MetBetweenMorph, b %+ q (->) q %+ b %+MetBetweenMorph,
+q %+ t (->) t %+ q %+MetCC %+MetBetweenMorph, t %+ q (->) q %+ t %+MetCC %+MetBetweenMorph,
+q %+ k (->) k %+ q %+MetCC %+MetBetweenMorph, k %+ q (->) q %+ k %+MetCC %+MetBetweenMorph,
+q %+ p (->) p %+ q %+MetCC %+MetBetweenMorph, p %+ q (->) q %+ p %+MetCC %+MetBetweenMorph,
+b %+ d (->) d %+ b %+MetCC %+MetBetweenMorph, b %+ g (->) g %+ b %+MetCC %+MetBetweenMorph, 
+g %+ b (->) b %+ g %+MetCC %+MetBetweenMorph, d %+ b (->) b %+ d %+MetCC %+MetBetweenMorph, 
+b %+ t (->) t %+ b %+MetCC %+MetBetweenMorph, t %+ b (->) b %+ t %+MetCC %+MetBetweenMorph,
+b %+ k (->) k %+ b %+MetCC %+MetBetweenMorph, k %+ b (->) b %+ k %+MetCC %+MetBetweenMorph,
+d %+ g (->) g %+ d %+MetCC %+MetBetweenMorph, g %+ d (->) d %+ g %+MetCC %+MetBetweenMorph, 
+d %+ t (->) t %+ d %+MetCC %+MetBetweenMorph, t %+ d (->) d %+ t %+MetCC %+MetBetweenMorph,
+d %+ k (->) k %+ d %+MetCC %+MetBetweenMorph, k %+ d (->) d %+ k %+MetCC %+MetBetweenMorph,
+g %+ t (->) t %+ g %+MetCC %+MetBetweenMorph, t %+ g (->) g %+ t %+MetCC %+MetBetweenMorph,
+g %+ k (->) k %+ g %+MetCC %+MetBetweenMorph, k %+ g (->) g %+ k %+MetCC %+MetBetweenMorph,
+k %+ t (->) t %+ k %+MetCC %+MetBetweenMorph, t %+ k (->) k %+ t %+MetCC %+MetBetweenMorph,
+a b (->) b a %+MetCV %+MetWithinMorph, b a (->) a b %+MetCV %+MetWithinMorph,
+a d (->) d a %+MetCV %+MetWithinMorph, d a (->) a d %+MetCV %+MetWithinMorph,
+a g (->) g a %+MetCV %+MetWithinMorph, g a (->) a g %+MetCV %+MetWithinMorph,
+a h (->) h a %+MetCV %+MetWithinMorph, h a (->) a h %+MetCV %+MetWithinMorph,
+a k (->) k a %+MetCV %+MetWithinMorph, k a (->) a k %+MetCV %+MetWithinMorph,
+a p (->) p a %+MetCV %+MetWithinMorph, p a (->) a p %+MetCV %+MetWithinMorph,
+a q (->) q a %+MetCV %+MetWithinMorph, q a (->) a q %+MetCV %+MetWithinMorph,
+a t (->) t a %+MetCV %+MetWithinMorph, t a (->) a t %+MetCV %+MetWithinMorph,
+e b (->) b e %+MetCV %+MetWithinMorph, b e (->) e b %+MetCV %+MetWithinMorph,
+e d (->) d e %+MetCV %+MetWithinMorph, d e (->) e d %+MetCV %+MetWithinMorph,
+e g (->) g e %+MetCV %+MetWithinMorph, g e (->) e g %+MetCV %+MetWithinMorph,
+e h (->) h e %+MetCV %+MetWithinMorph, h e (->) e h %+MetCV %+MetWithinMorph,
+e k (->) k e %+MetCV %+MetWithinMorph, k e (->) e k %+MetCV %+MetWithinMorph,
+e p (->) p e %+MetCV %+MetWithinMorph, p e (->) e p %+MetCV %+MetWithinMorph,
+e q (->) q e %+MetCV %+MetWithinMorph, q e (->) e q %+MetCV %+MetWithinMorph,
+e t (->) t e %+MetCV %+MetWithinMorph, t e (->) e t %+MetCV %+MetWithinMorph,
+I b (->) b I %+MetCV %+MetWithinMorph, b I (->) I b %+MetCV %+MetWithinMorph,
+I d (->) d I %+MetCV %+MetWithinMorph, d I (->) I d %+MetCV %+MetWithinMorph,
+I g (->) g I %+MetCV %+MetWithinMorph, g I (->) I g %+MetCV %+MetWithinMorph,
+I h (->) h I %+MetCV %+MetWithinMorph, h I (->) I h %+MetCV %+MetWithinMorph,
+I k (->) k I %+MetCV %+MetWithinMorph, k I (->) I k %+MetCV %+MetWithinMorph,
+I p (->) p I %+MetCV %+MetWithinMorph, p I (->) I p %+MetCV %+MetWithinMorph,
+I q (->) q I %+MetCV %+MetWithinMorph, q I (->) I q %+MetCV %+MetWithinMorph,
+I t (->) t I %+MetCV %+MetWithinMorph, t I (->) I t %+MetCV %+MetWithinMorph,
+o b (->) b o %+MetCV %+MetWithinMorph, b o (->) o b %+MetCV %+MetWithinMorph,
+o d (->) d o %+MetCV %+MetWithinMorph, d o (->) o d %+MetCV %+MetWithinMorph,
+o g (->) g o %+MetCV %+MetWithinMorph, g o (->) o g %+MetCV %+MetWithinMorph,
+o h (->) h o %+MetCV %+MetWithinMorph, h o (->) o h %+MetCV %+MetWithinMorph,
+o k (->) k o %+MetCV %+MetWithinMorph, k o (->) o k %+MetCV %+MetWithinMorph,
+o p (->) p o %+MetCV %+MetWithinMorph, p o (->) o p %+MetCV %+MetWithinMorph,
+o q (->) q o %+MetCV %+MetWithinMorph, q o (->) o q %+MetCV %+MetWithinMorph,
+o t (->) t o %+MetCV %+MetWithinMorph, t o (->) o t %+MetCV %+MetWithinMorph,
+u b (->) b u %+MetCV %+MetWithinMorph, b u (->) u b %+MetCV %+MetWithinMorph,
+u d (->) d u %+MetCV %+MetWithinMorph, d u (->) u d %+MetCV %+MetWithinMorph,
+u g (->) g u %+MetCV %+MetWithinMorph, g u (->) u g %+MetCV %+MetWithinMorph,
+u h (->) h u %+MetCV %+MetWithinMorph, h u (->) u h %+MetCV %+MetWithinMorph,
+u k (->) k u %+MetCV %+MetWithinMorph, k u (->) u k %+MetCV %+MetWithinMorph,
+u p (->) p u %+MetCV %+MetWithinMorph, p u (->) u p %+MetCV %+MetWithinMorph,
+u q (->) q u %+MetCV %+MetWithinMorph, q u (->) u q %+MetCV %+MetWithinMorph,
+u t (->) t u %+MetCV %+MetWithinMorph, t u (->) u t %+MetCV %+MetWithinMorph,
+a %+ b (->) b %+ a %+MetCV %+MetBetweenMorph, b %+ a (->) a %+ b %+MetCV %+MetBetweenMorph,
+a %+ d (->) d %+ a %+MetCV %+MetBetweenMorph, d %+ a (->) a %+ d %+MetCV %+MetBetweenMorph,
+a %+ g (->) g %+ a %+MetCV %+MetBetweenMorph, g %+ a (->) a %+ g %+MetCV %+MetBetweenMorph,
+a %+ h (->) h %+ a %+MetCV %+MetBetweenMorph, h %+ a (->) a %+ h %+MetCV %+MetBetweenMorph,
+a %+ k (->) k %+ a %+MetCV %+MetBetweenMorph, k %+ a (->) a %+ k %+MetCV %+MetBetweenMorph,
+a %+ p (->) p %+ a %+MetCV %+MetBetweenMorph, p %+ a (->) a %+ p %+MetCV %+MetBetweenMorph,
+a %+ q (->) q %+ a %+MetCV %+MetBetweenMorph, q %+ a (->) a %+ q %+MetCV %+MetBetweenMorph,
+a %+ t (->) t %+ a %+MetCV %+MetBetweenMorph, t %+ a (->) a %+ t %+MetCV %+MetBetweenMorph,
+e %+ b (->) b %+ e %+MetCV %+MetBetweenMorph, b %+ e (->) e %+ b %+MetCV %+MetBetweenMorph,
+e %+ d (->) d %+ e %+MetCV %+MetBetweenMorph, d %+ e (->) e %+ d %+MetCV %+MetBetweenMorph,
+e %+ g (->) g %+ e %+MetCV %+MetBetweenMorph, g %+ e (->) e %+ g %+MetCV %+MetBetweenMorph,
+e %+ h (->) h %+ e %+MetCV %+MetBetweenMorph, h %+ e (->) e %+ h %+MetCV %+MetBetweenMorph,
+e %+ k (->) k %+ e %+MetCV %+MetBetweenMorph, k %+ e (->) e %+ k %+MetCV %+MetBetweenMorph,
+e %+ p (->) p %+ e %+MetCV %+MetBetweenMorph, p %+ e (->) e %+ p %+MetCV %+MetBetweenMorph,
+e %+ q (->) q %+ e %+MetCV %+MetBetweenMorph, q %+ e (->) e %+ q %+MetCV %+MetBetweenMorph,
+e %+ t (->) t %+ e %+MetCV %+MetBetweenMorph, t %+ e (->) e %+ t %+MetCV %+MetBetweenMorph,
+i %+ b (->) b %+ i %+MetCV %+MetBetweenMorph, b %+ i (->) i %+ b %+MetCV %+MetBetweenMorph,
+i %+ d (->) d %+ i %+MetCV %+MetBetweenMorph, d %+ i (->) i %+ d %+MetCV %+MetBetweenMorph,
+i %+ g (->) g %+ i %+MetCV %+MetBetweenMorph, g %+ i (->) i %+ g %+MetCV %+MetBetweenMorph,
+i %+ h (->) h %+ i %+MetCV %+MetBetweenMorph, h %+ i (->) i %+ h %+MetCV %+MetBetweenMorph,
+i %+ k (->) k %+ i %+MetCV %+MetBetweenMorph, k %+ i (->) i %+ k %+MetCV %+MetBetweenMorph,
+i %+ p (->) p %+ i %+MetCV %+MetBetweenMorph, p %+ i (->) i %+ p %+MetCV %+MetBetweenMorph,
+i %+ q (->) q %+ i %+MetCV %+MetBetweenMorph, q %+ i (->) i %+ q %+MetCV %+MetBetweenMorph,
+i %+ t (->) t %+ i %+MetCV %+MetBetweenMorph, t %+ i (->) i %+ t %+MetCV %+MetBetweenMorph,
+I %+ b (->) b %+ I %+MetCV %+MetBetweenMorph, b %+ I (->) I %+ b %+MetCV %+MetBetweenMorph,
+I %+ d (->) d %+ I %+MetCV %+MetBetweenMorph, d %+ I (->) I %+ d %+MetCV %+MetBetweenMorph,
+I %+ g (->) g %+ I %+MetCV %+MetBetweenMorph, g %+ I (->) I %+ g %+MetCV %+MetBetweenMorph,
+I %+ h (->) h %+ I %+MetCV %+MetBetweenMorph, h %+ I (->) I %+ h %+MetCV %+MetBetweenMorph,
+I %+ k (->) k %+ I %+MetCV %+MetBetweenMorph, k %+ I (->) I %+ k %+MetCV %+MetBetweenMorph,
+I %+ p (->) p %+ I %+MetCV %+MetBetweenMorph, p %+ I (->) I %+ p %+MetCV %+MetBetweenMorph,
+I %+ q (->) q %+ I %+MetCV %+MetBetweenMorph, q %+ I (->) I %+ q %+MetCV %+MetBetweenMorph,
+I %+ t (->) t %+ I %+MetCV %+MetBetweenMorph, t %+ I (->) I %+ t %+MetCV %+MetBetweenMorph,
+o %+ b (->) b %+ o %+MetCV %+MetBetweenMorph, b %+ o (->) o %+ b %+MetCV %+MetBetweenMorph,
+o %+ d (->) d %+ o %+MetCV %+MetBetweenMorph, d %+ o (->) o %+ d %+MetCV %+MetBetweenMorph,
+o %+ g (->) g %+ o %+MetCV %+MetBetweenMorph, g %+ o (->) o %+ g %+MetCV %+MetBetweenMorph,
+o %+ h (->) h %+ o %+MetCV %+MetBetweenMorph, h %+ o (->) o %+ h %+MetCV %+MetBetweenMorph,
+o %+ k (->) k %+ o %+MetCV %+MetBetweenMorph, k %+ o (->) o %+ k %+MetCV %+MetBetweenMorph,
+o %+ p (->) p %+ o %+MetCV %+MetBetweenMorph, p %+ o (->) o %+ p %+MetCV %+MetBetweenMorph,
+o %+ q (->) q %+ o %+MetCV %+MetBetweenMorph, q %+ o (->) o %+ q %+MetCV %+MetBetweenMorph,
+o %+ t (->) t %+ o %+MetCV %+MetBetweenMorph, t %+ o (->) o %+ t %+MetCV %+MetBetweenMorph,
+u %+ b (->) b %+ u %+MetCV %+MetBetweenMorph, b %+ u (->) u %+ b %+MetCV %+MetBetweenMorph,
+u %+ d (->) d %+ u %+MetCV %+MetBetweenMorph, d %+ u (->) u %+ d %+MetCV %+MetBetweenMorph,
+u %+ g (->) g %+ u %+MetCV %+MetBetweenMorph, g %+ u (->) u %+ g %+MetCV %+MetBetweenMorph,
+u %+ h (->) h %+ u %+MetCV %+MetBetweenMorph, h %+ u (->) u %+ h %+MetCV %+MetBetweenMorph,
+u %+ k (->) k %+ u %+MetCV %+MetBetweenMorph, k %+ u (->) u %+ k %+MetCV %+MetBetweenMorph,
+u %+ p (->) p %+ u %+MetCV %+MetBetweenMorph, p %+ u (->) u %+ p %+MetCV %+MetBetweenMorph,
+u %+ q (->) q %+ u %+MetCV %+MetBetweenMorph, q %+ u (->) u %+ q %+MetCV %+MetBetweenMorph,
+u %+ t (->) t %+ u %+MetCV %+MetBetweenMorph, t %+ u (->) u %+ t %+MetCV %+MetBetweenMorph
 ;
 # Let's start moving these
 define DeletionVowel V (->) %+DelV .o. 
-# Need to let through things withot %+Delv
+# Need to let through things without %+Delv
 0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] .o.  0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] .o.
 0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] .o.  0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] .o.
 0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] .o.  0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] .o.
@@ -145,6 +262,10 @@ define Gen [ DeletionVowel .o. GenStress .o. Shuffle .o. Syllabify ] ;
 
 ######################### OT CONSTRAINTS #############################
 
+# The Viol family of constraints, and the accompanying comments in 
+# this secton, are from Karttunen (2004).  His Finnish prosody
+# script may be found at http://www.stanford.edu/~laurik/fsmbook .
+#
 # We use asterisks to mark constraint violations. Ordinary constraints
 # such as Lapse assign single asterisks as the violation marks and the
 # candidate with the fewest number is selected. Gradient constraints
@@ -185,9 +306,13 @@ define Pardon {*} -> 0;
 
 # Faithfulness constraints
 
-define LinearityWithinMorpheme [ %+Met -> ... {*}] ;
+define LinearityBetweenMorphemes [ %+MetBetweenMorph -> ... {*}] ;
 
-define LinearityBetweenMorphemes [ %+MetMorph -> ... {*}] ;
+define LinearityWithinMorpheme [ %+MetWithinMorph -> ... {*}] ;
+
+define LinearityCC [ %+MetCC-> ... {*}] ;
+
+define LinearityCV [ %+MetCV-> ... {*}] ;
 
 define IdentVoice [ %+DeltaVoice -> ... {*}] ;
 
@@ -213,11 +338,7 @@ define HasOnset V -> ... {*} || EDGE/[GENTAGS | %+ ] _ ;
 
 define Linearity [ %+Met -> ... {*}] ;
 
-define IdentVoice [ %+DeltaVoice -> ... {*}] ;
-
-define IdentNasal [ %+DeltaNasal -> ... {*}] ;
-
-define MaxV [ %+DelV -> ... {*}] ;
+define LinearityVV [ %+MetVV -> ... {*}] ;
 
 define HasPrimaryStress ~$PRIMARYSTRESS -> ... {*} || .#. _ .#. ;
 
@@ -246,10 +367,9 @@ I -> ɨ;
 
 define Readable [GENTAGS | %+ ] -> 0 ;
 
-# Letting through plenty of complex onsets when it doesn't have to
-# TODO/FIXME 
-# Add in No Cross-Morpheme Metathesis constraint above NoGlottObstr
 read regex Morphology .o. Gen 
+.o. LinearityVV .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
+.o. LinearityCV .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
 .o. SonorantNucleus .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
 .o. HasOnset .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
 .o. SSP .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
@@ -264,6 +384,7 @@ read regex Morphology .o. Gen
 .o. MaxV .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. LinearityBetweenMorphemes .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. NoGlottObs .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. LinearityCC .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
 .o. LinearityWithinMorpheme .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 #.o. Pretty
 .o. Readable
@@ -291,7 +412,7 @@ echo ** hIdIn
 down hIdIn;
 echo ** hIdIn+In
 down hIdIn+In;
-echo ** Should metathesize - expect puhdin
+echo ** Should metathesize - expect pudhin
 echo ** pu+hIdIn
 down pu+hIdIn;
 
@@ -311,6 +432,3 @@ echo ** pu+ledeh
 down pu+ledeh;
 echo ** ledeh+to
 down ledeh+to;
-# Shall we start allowing prefixes and suffixes? Nah
-#echo ** ledehto
-#down ledeh+to;
