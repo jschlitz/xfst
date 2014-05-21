@@ -5,7 +5,7 @@
 ################################## DATA #################################
 
 # Simplify for syllabification
-define ROOTS {hIgIp} | {hIdIm} | {hIdIn} | {gihib} ;
+define ROOTS {hIgIp} | {hIdIm} | {hIdIn} | {gihib} | {ledeh} ;
 
 ############################# BASIC DEFINITIONS #########################
 
@@ -18,7 +18,7 @@ define V [ a | %[aPrimaryStress%] | %[aSecondaryStress%] |
 
 
 # q = glottal stop
-define C [ b | d | g | h | k | m | n | p | q | t ] ;
+define C [ b | d | g | h | k | l | m | n | p | q | t ] ;
 
 define SEGMENT [ V | C ] ;
 
@@ -26,6 +26,7 @@ define HighV [ u | i | I ] ;
 define GLOTTAL [ h | q ] ;
 # sholud call this "non-glottal obstruent"
 define OBSTRUENT [ b | d | g | k | p | t] ;
+# In the sense of "potential vocalic nucleus"
 define SONORANT [ V ] ;
 define STRESSED [ %[aPrimaryStress%] | %[ePrimaryStress%] | %[iPrimaryStress%] |
 %[IPrimaryStress%] | %[oPrimaryStress%] | %[uPrimaryStress%] ] |
@@ -40,7 +41,7 @@ define SECONDARYSTRESS [ %[aSecondaryStress%] | %[eSecondaryStress%] |
     %[iSecondaryStress%] | %[ISecondaryStress%] | %[oSecondaryStress%] | 
     %[uSecondaryStress%] ] ;
 
-define GENTAGS [ %+DelV | %+Met ] ;
+define GENTAGS [ %+DelV | %+Met | %+MetMorph ] ;
 
 #define TAGS [ PERSON | NUMBER | TENSE ] ;
 
@@ -61,15 +62,11 @@ define USS [ Heavy | Light .o. ~$[STRESSED]] ;
 ############################# MORPHOLOGY ################################
 
 # To do: allow free order in tags
-# Do metathesis first
-# All persons and numbers except 3Sing
-# Tags contain 1st, or 2nd, or 3rd and Pl
 
 define PREFIXES [ {qi} | {ma} | {pu} ] %+ ;
-define SUFFIXES %+ [ {In} ] ;
+define SUFFIXES %+ [ {In} | {to} ] ;
 
 define Morphology (PREFIXES) ROOTS | ROOTS (SUFFIXES);
-#define Morphology ROOTS ;
 
 ################################### GEN ##################################
 
@@ -79,6 +76,7 @@ define Syllabify SEGMENT (->) ... "." || _ SEGMENT/[GENTAGS | %+] ;
 # very inefficient and led to memory problems
 #[ [?* m:l l:m ?* []:%+Met]/GENTAGS | ~$[m l]/GENTAGS ] | ?* ].o.
 
+# Both within and across morpheme boundaries
 define Shuffle h q (->) q h %+Met, q h (->) h q %+Met,
 h b (->) b h %+Met, h d (->) d h %+Met, h g (->) g h %+Met, 
 g h (->) h g %+Met, d h (->) h d %+Met, b h (->) h b %+Met, 
@@ -99,14 +97,30 @@ d t (->) t d %+Met, t d (->) d t %+Met,
 d k (->) k d %+Met, k d (->) d k %+Met,
 g t (->) t g %+Met, t g (->) g t %+Met,
 g k (->) k g %+Met, k g (->) g k %+Met,
-k t (->) t k %+Met, t k (->) k t %+Met
-#t %+DelV h (->) h %+DelV t %+Met
-#define Shuffle h g (->) g h %+Met,
-#h %+DelV g (->) g %+DelV h %+Met,
-#define Shuffle h d (->) d h %+Met,
-#h %+DelV d (->) d %+DelV h %+Met
+k t (->) t k %+Met, t k (->) k t %+Met,
+#define ShuffleAcross h %+ q (->) q %+ h %+MetMorph, q %+ h (->) h %+ q %+MetMorph,
+h %+ q (->) q %+ h %+MetMorph, q %+ h (->) h %+ q %+MetMorph,
+h %+ b (->) b %+ h %+MetMorph, h %+ d (->) d %+ h %+MetMorph, h %+ g (->) g %+ h %+MetMorph, 
+g %+ h (->) h %+ g %+MetMorph, d %+ h (->) h %+ d %+MetMorph, b %+ h (->) h %+ b %+MetMorph, 
+h %+ t (->) t %+ h %+MetMorph, t %+ h (->) h %+ t %+MetMorph,
+h %+ k (->) k %+ h %+MetMorph, k %+ h (->) h %+ k %+MetMorph,
+h %+ p (->) p %+ h %+MetMorph, p %+ h (->) h %+ p %+MetMorph,
+q %+ b (->) b %+ q %+MetMorph, q %+ d (->) d %+ q %+MetMorph, q %+ g (->) g %+ q %+MetMorph, 
+g %+ q (->) q %+ g %+MetMorph, d %+ q (->) q %+ d %+MetMorph, b %+ q (->) q %+ b %+MetMorph,
+q %+ t (->) t %+ q %+MetMorph, t %+ q (->) q %+ t %+MetMorph,
+q %+ k (->) k %+ q %+MetMorph, k %+ q (->) q %+ k %+MetMorph,
+q %+ p (->) p %+ q %+MetMorph, p %+ q (->) q %+ p %+MetMorph,
+b %+ d (->) d %+ b %+MetMorph, b %+ g (->) g %+ b %+MetMorph, 
+g %+ b (->) b %+ g %+MetMorph, d %+ b (->) b %+ d %+MetMorph, 
+b %+ t (->) t %+ b %+MetMorph, t %+ b (->) b %+ t %+MetMorph,
+b %+ k (->) k %+ b %+MetMorph, k %+ b (->) b %+ k %+MetMorph,
+d %+ g (->) g %+ d %+MetMorph, g %+ d (->) d %+ g %+MetMorph, 
+d %+ t (->) t %+ d %+MetMorph, t %+ d (->) d %+ t %+MetMorph,
+d %+ k (->) k %+ d %+MetMorph, k %+ d (->) d %+ k %+MetMorph,
+g %+ t (->) t %+ g %+MetMorph, t %+ g (->) g %+ t %+MetMorph,
+g %+ k (->) k %+ g %+MetMorph, k %+ g (->) g %+ k %+MetMorph,
+k %+ t (->) t %+ k %+MetMorph, t %+ k (->) k %+ t %+MetMorph
 ;
-
 # Let's start moving these
 define DeletionVowel V (->) %+DelV .o. 
 # Need to let through things withot %+Delv
@@ -127,14 +141,7 @@ define GenSecondaryStress a (->) %[aSecondaryStress%],
 
 define GenStress GenPrimaryStress .o. GenSecondaryStress ;
 
-#define Gen [ Shuffle .o. DeletionVowel .o. Syllabify ] ;
-
-# Add primary stress to all syllables
-#
-# Then add a constraint that limits primary stress to one per word
-# And another constraint that limits primary stress to first syllable
 define Gen [ DeletionVowel .o. GenStress .o. Shuffle .o. Syllabify ] ;
-#define Gen [ DeletionVowel .o. Shuffle ] ;
 
 ######################### OT CONSTRAINTS #############################
 
@@ -178,7 +185,9 @@ define Pardon {*} -> 0;
 
 # Faithfulness constraints
 
-define Linearity [ %+Met -> ... {*}] ;
+define LinearityWithinMorpheme [ %+Met -> ... {*}] ;
+
+define LinearityBetweenMorphemes [ %+MetMorph -> ... {*}] ;
 
 define IdentVoice [ %+DeltaVoice -> ... {*}] ;
 
@@ -202,6 +211,14 @@ define SonorantNucleus ~$V -> ... {*} || EDGE _ EDGE ;
 
 define HasOnset V -> ... {*} || EDGE/[GENTAGS | %+ ] _ ;
 
+define Linearity [ %+Met -> ... {*}] ;
+
+define IdentVoice [ %+DeltaVoice -> ... {*}] ;
+
+define IdentNasal [ %+DeltaNasal -> ... {*}] ;
+
+define MaxV [ %+DelV -> ... {*}] ;
+
 define HasPrimaryStress ~$PRIMARYSTRESS -> ... {*} || .#. _ .#. ;
 
 define OnlyOnePrimaryStress $[PRIMARYSTRESS ?* PRIMARYSTRESS] -> ... {*} || .#. _ .#. ;
@@ -212,7 +229,7 @@ define NoStressClash SS/[GENTAGS | %+] "." SS/[GENTAGS | %+ ] -> ... {*} ;
 define NoDoubledUnstressed USS/[GENTAGS | %+] "." USS/[GENTAGS | %+ ] -> ... {*} ;
 
 # Is this why syllabification is breaking?
-define SSP [SEGMENT* V+ C+ V+ SEGMENT*]/[GENTAGS | %+] -> ... {*} || EDGE _ EDGE;
+define SSP $[ V+ C+ V+ ]/[GENTAGS | %+] -> ... {*} || EDGE _ EDGE;
 
 define InitialStress ~$PRIMARYSTRESS -> ... {*} || .#. _ EDGE/[GENTAGS | %+] ;
 
@@ -231,7 +248,7 @@ define Readable [GENTAGS | %+ ] -> 0 ;
 
 # Letting through plenty of complex onsets when it doesn't have to
 # TODO/FIXME 
-# Shuffle has now broken syllabification
+# Add in No Cross-Morpheme Metathesis constraint above NoGlottObstr
 read regex Morphology .o. Gen 
 .o. SonorantNucleus .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
 .o. HasOnset .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
@@ -244,10 +261,10 @@ read regex Morphology .o. Gen
 .o. NoDoubledUnstressed .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. InitialStress .O. Viol1 .O. Viol0 .o. Pardon
 .o. NoUnstressedHighVowel .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
-#.o. MaxV .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
-# With pardon
 .o. MaxV .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. LinearityBetweenMorphemes .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. NoGlottObs .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. LinearityWithinMorpheme .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 #.o. Pretty
 .o. Readable
 ;
@@ -286,4 +303,14 @@ down gihib+In;
 echo ** pu+gihib
 down pu+gihib;
 
-# cleanup net ?
+echo ** ledeh
+down ledeh;
+echo ** ledeh+In
+down ledeh+In;
+echo ** pu+ledeh
+down pu+ledeh;
+echo ** ledeh+to
+down ledeh+to;
+# Shall we start allowing prefixes and suffixes? Nah
+#echo ** ledehto
+#down ledeh+to;
