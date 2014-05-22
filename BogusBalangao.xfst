@@ -306,6 +306,13 @@ define Viol15 ~[Viol^16];
 
 define Pardon {*} -> 0;
 
+# End of Karttunen's code
+
+#define EvalViol Viol15 .O.  Viol14 .O.  Viol13 .O.  Viol12 .O.  Viol11 .O.
+#Viol10 .O.  Viol9 .O.  Viol8 .O.  Viol7 .O.  Viol6 .O.  Viol5 .O.
+#Viol4 .O.  Viol3 .O.  Viol2 .O.  Viol1 .O.  Viol0 .o. Pardon ;
+define EvalViol Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
+#define EvalViol Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O.  Viol0 .o. Pardon ;
 ########################## CONSTRAINTS ##############################
 
 # Faithfulness constraints
@@ -359,7 +366,7 @@ define SSP $[ V+ C+ V+ ]/[GENTAGS | %+] -> ... {*} || EDGE _ EDGE;
 define InitialStress ~$PRIMARYSTRESS -> ... {*} || .#. _ EDGE/[GENTAGS | %+] ;
 
 # No unstressed high vowels between two stressed syllables
-define NoUnstressedHighVowel C*/[GENTAGS | %+] [ u | i | I ] C*/[GENTAGS | %+] 
+define NoLapse C*/[GENTAGS | %+] [ u | i | I ] C*/[GENTAGS | %+] 
     -> ... {*} || SS/[GENTAGS | %+] "." _ "." SS/[GENTAGS | %+ ];
 
 ########################## READABILITY ##############################
@@ -372,23 +379,23 @@ I -> ɨ;
 define Readable [GENTAGS | %+ ] -> 0 ;
 
 read regex Morphology .o. Gen 
-.o. LinearityVV .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
-.o. LinearityCV .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
-.o. SonorantNucleus .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
-.o. HasOnset .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
-.o. SSP .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
-.o. NoComplexOnset .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
-.o. NoComplexCoda .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
-.o. HasPrimaryStress .O. Viol1 .O. Viol0 
-.o. OnlyOnePrimaryStress .O. Viol1 .O. Viol0 
+.o. LinearityVV .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. LinearityCV .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. SonorantNucleus .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. HasOnset .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. SSP .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. NoComplexOnset .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. NoComplexCoda .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. HasPrimaryStress .O. Viol1 .O. Viol0 .o. Pardon
+.o. OnlyOnePrimaryStress .O. Viol1 .O. Viol0 .o. Pardon
 .o. NoStressClash .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. NoDoubledUnstressed .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. InitialStress .O. Viol1 .O. Viol0 .o. Pardon
-.o. NoUnstressedHighVowel .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. NoLapse .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. MaxV .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. LinearityBetweenMorphemes .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. NoGlottObs .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
-.o. LinearityCC .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
+.o. LinearityCC .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. LinearityWithinMorpheme .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 #.o. Pretty
 .o. Readable

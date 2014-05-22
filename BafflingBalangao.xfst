@@ -381,9 +381,9 @@ read regex Morphology .o. Gen
 .o. InitialStress .O. Viol1 .O. Viol0 .o. Pardon
 .o. NoUnstressedHighVowels .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. MaxV .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. LinearityBetweenMorphemes .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. LinearityWithinMorpheme .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. NoGlottObs .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
-.o. LinearityBetweenMorphemes .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. LinearityCC .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 #.o. Pretty
 .o. Readable
@@ -393,7 +393,6 @@ echo ** hIgIp
 down hIgIp;
 echo ** hIgIpIn
 down hIgIp+In;
-echo ** Shouldn't
 echo ** puhIgIp
 down pu+hIgIp;
 
@@ -401,7 +400,6 @@ echo ** hIdIm
 down hIdIm;
 echo ** hIdIm+In
 down hIdIm+In;
-echo ** Shouldn't metathesize
 echo ** pu+hIdIm
 down pu+hIdIm;
 
@@ -409,13 +407,11 @@ echo ** hIdIn
 down hIdIn;
 echo ** hIdIn+In
 down hIdIn+In;
-echo ** Shouldn't metathesize
 echo ** pu+hIdIn
 down pu+hIdIn;
 
 echo ** gihib
 down gihib;
-echo ** Shouldn't metathesize
 echo ** gihib+In
 down gihib+In;
 echo ** pu+gihib
@@ -427,6 +423,5 @@ echo ** ledeh+In
 down ledeh+In;
 echo ** pu+ledeh
 down pu+ledeh;
-echo ** Should metathesize - expect ledet+ho
 echo ** ledeh+to
 down ledeh+to;
