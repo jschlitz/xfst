@@ -60,7 +60,7 @@ define USS [ Heavy | Light .o. ~$[STRESSED]] ;
 ############################# MORPHOLOGY ################################
 
 define PREFIXES [ {qi} | {ma} | {pu} ] %+ ;
-define SUFFIXES %+ [ {In} | {to} ] ;
+define SUFFIXES %+ [ {In} | {um} | {to} ] ;
 
 define Morphology (PREFIXES) ROOTS | ROOTS (SUFFIXES);
 
@@ -241,10 +241,14 @@ u %+ t (->) t %+ u %+MetCV %+MetBetweenMorph, t %+ u (->) u %+ t %+MetCV %+MetBe
 # Let's start moving these
 define DeletionVowel V (->) %+DelV .o. 
 # Need to let through things without %+Delv
-0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] .o.  0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] .o.
-0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] .o.  0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] .o.
-0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] .o.  0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] .o.
-0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] .o.  0:%+DelV ?* %+DelV:0 ?* | ~[%+DelV] 
+0:%+DelV ?+ %+DelV:0 ?* | [%+DelV]* ~$[%+DelV] .o.  
+0:%+DelV ?+ %+DelV:0 ?* | [%+DelV]* ~$[%+DelV] .o.  
+0:%+DelV ?+ %+DelV:0 ?* | [%+DelV]* ~$[%+DelV] .o.  
+0:%+DelV ?+ %+DelV:0 ?* | [%+DelV]* ~$[%+DelV] .o.  
+0:%+DelV ?+ %+DelV:0 ?* | [%+DelV]* ~$[%+DelV] .o.  
+0:%+DelV ?+ %+DelV:0 ?* | [%+DelV]* ~$[%+DelV] .o.  
+0:%+DelV ?+ %+DelV:0 ?* | [%+DelV]* ~$[%+DelV] .o.  
+0:%+DelV ?+ %+DelV:0 ?* | [%+DelV]* ~$[%+DelV] 
 ;
 
 define GenPrimaryStress a (->) %[aPrimaryStress%], e (->) %[ePrimaryStress%], 
