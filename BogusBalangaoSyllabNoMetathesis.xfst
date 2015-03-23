@@ -1,0 +1,258 @@
+# -*- coding: utf-8 -*-
+
+# Bogus Balangao
+
+################################## DATA #################################
+
+# Simplify for syllabification
+define ROOTS {hIgIp} | {hIdIm} | {hIdIn} | {gihib} | {ledeh} ;
+
+############################# BASIC DEFINITIONS #########################
+
+define V [ a | %[aPrimaryStress%] | %[aSecondaryStress%] | 
+    e | %[ePrimaryStress%] | %[eSecondaryStress%] |
+    i | %[iPrimaryStress%] | %[iSecondaryStress%] |
+    I | %[IPrimaryStress%] | %[ISecondaryStress%] |
+    o | %[oPrimaryStress%] | %[oSecondaryStress%] |
+    u | %[uPrimaryStress%] | %[uSecondaryStress%] ] ;
+
+
+# q = glottal stop
+define C [ b | d | g | h | k | l | m | n | p | q | t ] ;
+
+define SEGMENT [ V | C ] ;
+
+define HighV [ u | i | I ] ;
+define GLOTTAL [ h | q ] ;
+# sholud call this "non-glottal obstruent"
+define OBSTRUENT [ b | d | g | k | p | t] ;
+# In the sense of "potential vocalic nucleus"
+define SONORANT [ V ] ;
+define STRESSED [ %[aPrimaryStress%] | %[ePrimaryStress%] | %[iPrimaryStress%] |
+%[IPrimaryStress%] | %[oPrimaryStress%] | %[uPrimaryStress%] ] |
+    [ %[aSecondaryStress%] | %[eSecondaryStress%] | %[iSecondaryStress%] | 
+    %[ISecondaryStress%] | %[oSecondaryStress%] | %[uSecondaryStress%] ] ;
+
+define PRIMARYSTRESS [ %[aPrimaryStress%] | %[ePrimaryStress%] | 
+    %[iPrimaryStress%] | %[IPrimaryStress%] | %[oPrimaryStress%] | 
+    %[uPrimaryStress%] ] ;
+
+define SECONDARYSTRESS [ %[aSecondaryStress%] | %[eSecondaryStress%] | 
+    %[iSecondaryStress%] | %[ISecondaryStress%] | %[oSecondaryStress%] | 
+    %[uSecondaryStress%] ] ;
+
+define GENTAGS [ %+DelV | %+Met | %+MetCC | %+MetCV | %+MetVV | 
+    %+MetCV | %+MetWithinMorph | %+MetBetweenMorph ] ;
+
+define BOUNDARY [ %+ | .#. | %. ] ;
+define EDGE [ .#. | %. ] ;
+
+# Syllable boundary
+define SB [~$%. %. ~$%.];
+
+define Light [C* V];
+define Heavy [Light SEGMENT+];
+
+define S [ Heavy | Light ] ;
+define SS [ Heavy | Light .o. $[STRESSED]] ;
+define USS [ Heavy | Light .o. ~$[STRESSED]] ;
+
+############################# MORPHOLOGY ################################
+
+define PREFIXES [ {qi} | {ma} | {pu} ] %+ ;
+define SUFFIXES %+ [ {In} | {um} | {to} ] ;
+
+define Morphology (PREFIXES) ROOTS | ROOTS (SUFFIXES);
+
+################################### GEN ##################################
+
+define Syllabify SEGMENT (->) ... "." || _ SEGMENT/[GENTAGS | %+] ;
+
+define GenPrimaryStress a (->) %[aPrimaryStress%], e (->) %[ePrimaryStress%], 
+    i (->)  %[iPrimaryStress%], I (->) %[IPrimaryStress%],
+    o (->) %[oPrimaryStress%], u (->) %[uPrimaryStress%] ;
+
+define GenSecondaryStress a (->) %[aSecondaryStress%], 
+    e (->) %[eSecondaryStress%], i (->)  %[iSecondaryStress%], 
+    I (->) %[ISecondaryStress%], o (->) %[oSecondaryStress%], 
+    u (->) %[uSecondaryStress%] ;
+
+define GenStress GenPrimaryStress .o. GenSecondaryStress ;
+
+define DeletionVowel V (->) %+DelV .o. 
+# Need to let through things without %+Delv
+0:%+DelV ?+ %+DelV:0 ?* | [%+DelV]* ~$[%+DelV] .o. 
+0:%+DelV ?+ %+DelV:0 ?* | [%+DelV]* ~$[%+DelV] .o. 
+0:%+DelV ?+ %+DelV:0 ?* | [%+DelV]* ~$[%+DelV] .o. 
+0:%+DelV ?+ %+DelV:0 ?* | [%+DelV]* ~$[%+DelV] .o. 
+0:%+DelV ?+ %+DelV:0 ?* | [%+DelV]* ~$[%+DelV] .o. 
+0:%+DelV ?+ %+DelV:0 ?* | [%+DelV]* ~$[%+DelV] .o. 
+0:%+DelV ?+ %+DelV:0 ?* | [%+DelV]* ~$[%+DelV] .o. 
+0:%+DelV ?+ %+DelV:0 ?* | [%+DelV]* ~$[%+DelV] 
+;
+
+define Gen [ DeletionVowel .o. GenStress .o. Syllabify ] ;
+
+######################### OT CONSTRAINTS #############################
+
+# The Viol family of constraints, and the accompanying comments in 
+# this secton, are from Karttunen (2004).  His Finnish prosody
+# script may be found at http://www.stanford.edu/~laurik/fsmbook .
+#
+# We use asterisks to mark constraint violations. Ordinary constraints
+# such as Lapse assign single asterisks as the violation marks and the
+# candidate with the fewest number is selected. Gradient constraints
+# such as AllFeetFirst mark violations with sequences of asterisks.
+# The number increases with distance from the word edge.
+
+# Every instance of * in an output candidate is a violation.
+
+define Viol ${*};
+
+# We prune candidates with "lenient composition" that eliminates
+# candidates that violate the constraint provided that at least
+# one output candidate survives.
+
+define Viol0 ~Viol;        # No violations
+define Viol1 ~[Viol^2];    # At most one violation
+define Viol2 ~[Viol^3];    # At most two violations
+define Viol3 ~[Viol^4];    # etc.
+define Viol4 ~[Viol^5];
+define Viol5 ~[Viol^6];
+define Viol6 ~[Viol^7];
+define Viol7 ~[Viol^8];
+define Viol8 ~[Viol^9];
+define Viol9 ~[Viol^10];
+define Viol10 ~[Viol^11];
+define Viol11 ~[Viol^12];
+define Viol12 ~[Viol^13];
+define Viol13 ~[Viol^14];
+define Viol14 ~[Viol^15];
+define Viol15 ~[Viol^16];
+
+# This eliminates the violation marks after the candidate set has
+# been pruned by a constraint.
+
+define Pardon {*} -> 0;
+
+# End of Karttunen's code
+
+#define EvalViol Viol15 .O.  Viol14 .O.  Viol13 .O.  Viol12 .O.  Viol11 .O.
+#Viol10 .O.  Viol9 .O.  Viol8 .O.  Viol7 .O.  Viol6 .O.  Viol5 .O.
+#Viol4 .O.  Viol3 .O.  Viol2 .O.  Viol1 .O.  Viol0 .o. Pardon ;
+define EvalViol Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
+#define EvalViol Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O.  Viol0 .o. Pardon ;
+########################## CONSTRAINTS ##############################
+
+# Faithfulness constraints
+
+define IdentVoice [ %+DeltaVoice -> ... {*}] ;
+
+define IdentNasal [ %+DeltaNasal -> ... {*}] ;
+
+define MaxV [ %+DelV -> ... {*}] ;
+
+# Markedness constraints
+
+define NoGlottObs [ [ GLOTTAL OBSTRUENT ]/[GENTAGS | %+ | "."]-> ... {*}] ;
+
+define NoComplexOnset [C C]/[GENTAGS | %+] -> ... {*} || EDGE _ ;
+
+define NoComplexCoda [C C]/[GENTAGS | %+ ] -> ... {*} || _ EDGE ;
+
+# If a syllable is all consonants, it violates this
+# If we use ~$[V], are we okay?
+# That might be a problem because it'll match syllable boundary
+# but it's minimal matching? not greedy?
+define SonorantNucleus ~$V -> ... {*} || EDGE _ EDGE ;
+
+define HasOnset V -> ... {*} || EDGE/[GENTAGS | %+ ] _ ;
+
+define Linearity [ %+Met -> ... {*}] ;
+
+define LinearityVV [ %+MetVV -> ... {*}] ;
+
+define HasPrimaryStress ~$PRIMARYSTRESS -> ... {*} || .#. _ .#. ;
+
+define OnlyOnePrimaryStress $[PRIMARYSTRESS ?* PRIMARYSTRESS] -> ... {*} || .#. _ .#. ;
+
+define NoStressClash SS/[GENTAGS | %+] "." SS/[GENTAGS | %+ ] -> ... {*} ;
+
+# I might prefer to do this as binary feet
+define NoDoubledUnstressed USS/[GENTAGS | %+] "." USS/[GENTAGS | %+ ] -> ... {*} ;
+
+define SSP $[ V+ C+ V+ ]/[GENTAGS | %+] -> ... {*} || EDGE _ EDGE;
+
+define InitialStress ~$PRIMARYSTRESS -> ... {*} || .#. _ EDGE/[GENTAGS | %+] ;
+
+# No unstressed high vowels between two stressed syllables
+define NoLapse C*/[GENTAGS | %+] [ u | i | I ] C*/[GENTAGS | %+] 
+    -> ... {*} || SS/[GENTAGS | %+] "." _ "." SS/[GENTAGS | %+ ];
+
+define NoHiatus $[ C* V V+ C* ]/[GENTAGS | %+] -> ... {*} || EDGE _ EDGE;
+
+########################## READABILITY ##############################
+
+# Remove tags, turn placeholders to IPA
+# ' is currently glottal stop
+define Pretty [ GENTAGS | %+ ] -> 0 .o.
+I -> ɨ;
+
+define Readable [GENTAGS | %+ ] -> 0 ;
+
+read regex Morphology .o. Gen 
+.o. SonorantNucleus .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. HasOnset .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. SSP .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. NoComplexOnset .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. NoComplexCoda .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. HasPrimaryStress .O. Viol1 .O. Viol0 .o. Pardon
+.o. OnlyOnePrimaryStress .O. Viol1 .O. Viol0 .o. Pardon
+.o. NoStressClash .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. NoDoubledUnstressed .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. InitialStress .O. Viol1 .O. Viol0 .o. Pardon
+.o. NoLapse .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. NoHiatus .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. MaxV .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. NoGlottObs .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+#.o. Pretty
+.o. Readable
+;
+
+echo ** hIgIp
+down hIgIp;
+echo ** hIgIpIn
+down hIgIp+In;
+echo ** This code only demonstrates metathesis constraints
+echo ** puhIgIp
+down pu+hIgIp;
+
+echo ** hIdIm
+down hIdIm;
+echo ** hIdIm+In
+down hIdIm+In;
+echo ** pu+hIdIm
+down pu+hIdIm;
+
+echo ** hIdIn
+down hIdIn;
+echo ** hIdIn+In
+down hIdIn+In;
+echo ** pu+hIdIn
+down pu+hIdIn;
+
+echo ** gihib
+down gihib;
+echo ** gihib+In
+down gihib+In;
+echo ** pu+gihib
+down pu+gihib;
+
+echo ** ledeh
+down ledeh;
+echo ** ledeh+In
+down ledeh+In;
+echo ** pu+ledeh
+down pu+ledeh;
+echo ** ledeh+to
+down ledeh+to;

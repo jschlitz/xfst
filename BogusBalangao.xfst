@@ -9,13 +9,7 @@ define ROOTS {hIgIp} | {hIdIm} | {hIdIn} | {gihib} | {ledeh} ;
 
 ############################# BASIC DEFINITIONS #########################
 
-define V [ a | %[aPrimaryStress%] | %[aSecondaryStress%] | 
-    e | %[ePrimaryStress%] | %[eSecondaryStress%] |
-    i | %[iPrimaryStress%] | %[iSecondaryStress%] |
-    I | %[IPrimaryStress%] | %[ISecondaryStress%] |
-    o | %[oPrimaryStress%] | %[oSecondaryStress%] |
-    u | %[uPrimaryStress%] | %[uSecondaryStress%] ] ;
-
+define V [ a | e | i | I | o | u ] ;
 
 # q = glottal stop
 define C [ b | d | g | h | k | l | m | n | p | q | t ] ;
@@ -28,21 +22,9 @@ define GLOTTAL [ h | q ] ;
 define OBSTRUENT [ b | d | g | k | p | t] ;
 # In the sense of "potential vocalic nucleus"
 define SONORANT [ V ] ;
-define STRESSED [ %[aPrimaryStress%] | %[ePrimaryStress%] | %[iPrimaryStress%] |
-%[IPrimaryStress%] | %[oPrimaryStress%] | %[uPrimaryStress%] ] |
-    [ %[aSecondaryStress%] | %[eSecondaryStress%] | %[iSecondaryStress%] | 
-    %[ISecondaryStress%] | %[oSecondaryStress%] | %[uSecondaryStress%] ] ;
 
-define PRIMARYSTRESS [ %[aPrimaryStress%] | %[ePrimaryStress%] | 
-    %[iPrimaryStress%] | %[IPrimaryStress%] | %[oPrimaryStress%] | 
-    %[uPrimaryStress%] ] ;
-
-define SECONDARYSTRESS [ %[aSecondaryStress%] | %[eSecondaryStress%] | 
-    %[iSecondaryStress%] | %[ISecondaryStress%] | %[oSecondaryStress%] | 
-    %[uSecondaryStress%] ] ;
-
-define GENTAGS [ %+DelV | %+Met | %+MetCC | %+MetCV | %+MetVV | 
-    %+MetCV | %+MetWithinMorph | %+MetBetweenMorph ] ;
+define GENTAGS [ %+DelV | %+DelC | %+Met | %+MetCC | %+MetCV | %+MetVV | 
+    %+MetWithinMorph | %+MetBetweenMorph ] ;
 
 define BOUNDARY [ %+ | .#. | %. ] ;
 define EDGE [ .#. | %. ] ;
@@ -54,15 +36,17 @@ define Light [C* V];
 define Heavy [Light SEGMENT+];
 
 define S [ Heavy | Light ] ;
-define SS [ Heavy | Light .o. $[STRESSED]] ;
-define USS [ Heavy | Light .o. ~$[STRESSED]] ;
 
 ############################# MORPHOLOGY ################################
 
 define PREFIXES [ {qi} | {ma} | {pu} ] %+ ;
 define SUFFIXES %+ [ {In} | {um} | {to} ] ;
 
-define Morphology (PREFIXES) ROOTS | ROOTS (SUFFIXES);
+# In real Balangao, high vowels delete in the presence of certain morphemes.
+# This rule presents a simplified version of this process.
+define Syncope [C* V C* HighV:0 C* V C*]/[GENTAGS | %+] .P. ?* ;
+
+define Morphology (PREFIXES) ROOTS | ROOTS (SUFFIXES) .o. Syncope;
 
 ################################### GEN ##################################
 
@@ -251,18 +235,9 @@ define DeletionVowel V (->) %+DelV .o.
 0:%+DelV ?+ %+DelV:0 ?* | [%+DelV]* ~$[%+DelV] 
 ;
 
-define GenPrimaryStress a (->) %[aPrimaryStress%], e (->) %[ePrimaryStress%], 
-    i (->)  %[iPrimaryStress%], I (->) %[IPrimaryStress%],
-    o (->) %[oPrimaryStress%], u (->) %[uPrimaryStress%] ;
+define DeletionCons C (->) %+DelC ;
 
-define GenSecondaryStress a (->) %[aSecondaryStress%], 
-    e (->) %[eSecondaryStress%], i (->)  %[iSecondaryStress%], 
-    I (->) %[ISecondaryStress%], o (->) %[oSecondaryStress%], 
-    u (->) %[uSecondaryStress%] ;
-
-define GenStress GenPrimaryStress .o. GenSecondaryStress ;
-
-define Gen [ DeletionVowel .o. GenStress .o. Shuffle .o. Syllabify ] ;
+define Gen [ DeletionVowel .o. DeletionCons .o. Shuffle .o. Syllabify ] ;
 
 ######################### OT CONSTRAINTS #############################
 
@@ -308,11 +283,6 @@ define Pardon {*} -> 0;
 
 # End of Karttunen's code
 
-#define EvalViol Viol15 .O.  Viol14 .O.  Viol13 .O.  Viol12 .O.  Viol11 .O.
-#Viol10 .O.  Viol9 .O.  Viol8 .O.  Viol7 .O.  Viol6 .O.  Viol5 .O.
-#Viol4 .O.  Viol3 .O.  Viol2 .O.  Viol1 .O.  Viol0 .o. Pardon ;
-define EvalViol Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 
-#define EvalViol Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O.  Viol0 .o. Pardon ;
 ########################## CONSTRAINTS ##############################
 
 # Faithfulness constraints
@@ -330,6 +300,8 @@ define IdentVoice [ %+DeltaVoice -> ... {*}] ;
 define IdentNasal [ %+DeltaNasal -> ... {*}] ;
 
 define MaxV [ %+DelV -> ... {*}] ;
+
+define MaxC [ %+DelC -> ... {*}] ;
 
 # Markedness constraints
 
@@ -365,10 +337,6 @@ define SSP $[ V+ C+ V+ ]/[GENTAGS | %+] -> ... {*} || EDGE _ EDGE;
 
 define InitialStress ~$PRIMARYSTRESS -> ... {*} || .#. _ EDGE/[GENTAGS | %+] ;
 
-# No unstressed high vowels between two stressed syllables
-define NoLapse C*/[GENTAGS | %+] [ u | i | I ] C*/[GENTAGS | %+] 
-    -> ... {*} || SS/[GENTAGS | %+] "." _ "." SS/[GENTAGS | %+ ];
-
 ########################## READABILITY ##############################
 
 # Remove tags, turn placeholders to IPA
@@ -386,13 +354,8 @@ read regex Morphology .o. Gen
 .o. SSP .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. NoComplexOnset .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. NoComplexCoda .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
-.o. HasPrimaryStress .O. Viol1 .O. Viol0 .o. Pardon
-.o. OnlyOnePrimaryStress .O. Viol1 .O. Viol0 .o. Pardon
-.o. NoStressClash .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
-.o. NoDoubledUnstressed .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
-.o. InitialStress .O. Viol1 .O. Viol0 .o. Pardon
-.o. NoLapse .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. MaxV .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
+.o. MaxC .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. LinearityBetweenMorphemes .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. NoGlottObs .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
 .o. LinearityCC .O. Viol5 .O. Viol4 .O. Viol3 .O. Viol2 .O. Viol1 .O. Viol0 .o. Pardon
@@ -400,8 +363,6 @@ read regex Morphology .o. Gen
 #.o. Pretty
 .o. Readable
 ;
-
-# Need to get Linearity in there sometime
 
 echo ** hIgIp
 down hIgIp;
